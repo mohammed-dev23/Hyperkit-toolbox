@@ -1,0 +1,19 @@
+[package]
+name = "HyperKit"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+evalexpr = "13.1.0"
+chrono = "0.4.42"
+colored = "3.0.0"
+rustyline = {version = "17.0.2" , features = ["with-file-history" , "derive"]}
+tar = "0.4.44"
+base64 = "0.22.1"
+hex = "0.4.3"
+urlencoding = "2.1.3"
+walkdir = "2.5.0"
+nix = {version = "0.30.1" , features = ["signal"]}
+sysinfo = "0.37.2"
+zip = "7.0.0"
+clap = {version = "4.5.54" , features = ["derive" , "color"] }
