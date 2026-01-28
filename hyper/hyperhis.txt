@@ -1,82 +1,4 @@
 #V2
-end
-clean
-see
-clean 
-end
-clean 
-ls
-clean 
-see
-go programming/Rust/testing/
-see
-clean 
-see
-zip --extract sample-1.zip test
-see
-end
-go programming/Rust/testing/
-see
-zip --extract sample-1.zip testt
-end
-clean 
-find 
-end
-clean 
-find 
-end
-find 
-end
-find 
-clean 
-end
-help
-end
-burn 
-forage 
-forge 
-clean 
-end
-clean 
-find SYS
-clean 
-end
-clean 
-see
-clean 
-bacl
-back
-see
-go back
-see
-go .snapshots/
-clean 
-clean .snapshots/
-cle
-clean
-go back
-see
-go root
-see
-go usr/
-see
-go bin/
-see
-find sudo
-clean
-end
-clean
-see
-clean
-back
-end
-clean
-end
-clean
-see
-go 
-go back
-see
 go mohammed/
 see
 clean
@@ -99,3 +21,81 @@ clean
 /
 \\/
 /
+see
+clean
+end
+clean
+see
+clean
+test
+end
+clean
+test
+end
+clean
+test
+clean
+test
+clea
+clean
+end
+test
+clean
+end
+test
+end
+clean
+test
+end
+clean
+test
+end
+clean
+test
+clean
+see
+clean
+find sudo
+clean
+see
+temp
+clean
+see
+clean
+end
+clean
+tree /home/mohammed/
+clean
+tree /home/mohammed/sys/
+tree /home/mohammed/programming/Rust/
+clear
+clean
+ls
+see
+go .cargo/
+see
+clean
+tree go back
+go back
+clean
+tree
+clean
+tree .config/
+clean
+end
+clean
+tree .config/
+clean
+end
+clean
+tree .config/
+clean
+see
+go sys/
+go bacl
+go back
+see
+clean
+tree sys/
+clean
+end

@@ -1,9 +1,8 @@
-use crate::apps::{ZipArg, ZipDir, zip , transmute , calc , time , tar};
+use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip};
 use crate::backend::safe::{ ErrH, HyperkitError, Ugh, Ughv};
 use crate::backend::{commands, standard::tell, parser::* };
 use std::{env::* , borrow::Cow::{self, Owned}};
 use colored::*;
-
 use rustyline::{Completer, Hinter, Validator , error::ReadlineError, completion::FilenameCompleter , highlight::{CmdKind, Highlighter, MatchingBracketHighlighter}, hint::HistoryHinter, 
     validate::MatchingBracketValidator , Cmd , CompletionType , Config , EditMode, Editor , KeyEvent , Helper 
     };
@@ -65,7 +64,7 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
         def.bind_sequence(KeyEvent::alt('b'), Cmd::HistorySearchBackward);
 
 
-        def.load_history("/home/mohammed/programming/Rust/practice/HyperKit/hyper/hyperhis.txt").unwrap_or_else(|e| {
+        def.load_history("/home/mohammed/programming/Rust/practice/Hyperkit/hyper/hyperhis.txt").unwrap_or_else(|e| {
             let path = tell();
             match e {
                 ReadlineError::Io(e) => {
@@ -332,6 +331,14 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
                     continue;
                 }
             }
+            "tree" => {
+                let path = token(&data, 1).checker(Some("path".to_string())).ughf();
+                if let Ok(o) = path {
+                    apps::treee(o).ugh();
+                } else {
+                    continue;
+                }
+            }
             "end" => {
                 break;
             }
@@ -344,7 +351,7 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
         }
     }
     let path = tell();
-        def.save_history("/home/mohammed/programming/Rust/practice/HyperKit/hyper/hyperhis.txt").unwrap_or_else(|e| 
+        def.save_history("/home/mohammed/programming/Rust/practice/Hyperkit/hyper/hyperhis.txt").unwrap_or_else(|e| 
             {eprintln!("[{path:?}]~>{}: due to {}" , "Error".bright_red().bold() , e.to_string().bright_red().bold())});
         
         Ok(())

@@ -627,10 +627,9 @@ pub mod safe {
 
 pub mod clean {
     use std::{fs::File, io::Read};
-
     use colored::Colorize;
 
-    use crate::backend::safe::HyperkitError;
+    use crate::backend::{safe::HyperkitError};
 
     pub trait ExtractOptions {
         type Out;
@@ -646,12 +645,12 @@ pub mod clean {
                 return o.clone();
             }
             else {
-                println!("[{}]~> due to {}" , "Error".bright_red().bold(), "extracting faild".bright_red().bold());
+                eprintln!("[{}]~> due to {}" , "Error".bright_red().bold(), "extracting faild".bright_red().bold());
                 return T::default();
             }
         }
     }
-       
+    
     pub fn read_file_cont(path:&str) -> std::result::Result<String , HyperkitError> {
         use super::safe::*;
 

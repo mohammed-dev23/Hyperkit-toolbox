@@ -1,15 +1,15 @@
 use core::str;
 use std::io::{self, Read, Write};
 use std::{ env, fs, path};
+use termtree::Tree;
 use colored::*;
 use evalexpr::*;
 use chrono::*;
-
 use tar::{Archive};
 use walkdir::WalkDir;
 use zip::{ZipArchive, ZipWriter};
 use zip::write::SimpleFileOptions;
-use crate::backend::clean::ExtractOptions;
+use crate::backend::clean::{ExtractOptions};
 use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
 
@@ -458,4 +458,27 @@ pub fn transmute (ttype:&str, flag:&str , the_name_of_the_file:&str , output_nam
         }
     }
     Ok(())
+}
+
+fn help_tree<P: AsRef<std::path::Path>>(path: P) -> String {
+    let p = path.as_ref().file_name().extract().to_str().extract().bright_green().bold().to_string();
+    p
+}
+
+pub fn treee<P: AsRef<std::path::Path> >(path: P) -> std::result::Result<Tree<String> , HyperkitError> {
+    let read_dir = fs::read_dir(&path).errh(Some(path.as_ref().to_string_lossy().to_string()))?;
+    let mut tree = Tree::new(help_tree(path.as_ref().canonicalize().errh(None)?));
+
+    for i in read_dir {
+        let i = i.errh(None)?;
+        let dir = i.metadata().errh(None)?;
+
+        if dir.is_dir() {
+            tree.push(treee(i.path())?);
+        } else {
+            tree.push(Tree::new(help_tree(i.path())));
+        }
+    }
+    println!("{tree}");
+    Ok(tree)
 }
