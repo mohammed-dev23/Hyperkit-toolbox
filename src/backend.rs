@@ -30,6 +30,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
             println!("   *{} {} {} {} {} to make/extract tar files" , "enter".green() , "tar".bright_blue() , "<Flag>".bright_purple(), "<File-Name>".bright_cyan() , "<File-Outpot-Name>".bright_magenta());
             println!("   *{} {} {} {} {} {} to encode/decode files" , "enter".green() , "transmute".bright_blue() , "<Type>".bright_purple(), "<Flag>".bright_yellow() , "<File-Name>".bright_cyan() , "<File-Outpot-Name>".bright_magenta());
             println!("   *{} {} {} {} {} {} {} {} {} to make/extract zip files" , "enter".green() , "zip".bright_blue() , "<Name>".bright_purple() , "<Flag>".bright_yellow(), "<Name/Path>".bright_cyan() , "<Flag2>".bright_yellow() , "<Name/Path2>".bright_cyan() , "<Flag3>".bright_yellow() , "<Name/Path3>".bright_cyan());
+            println!("   *{} {} {} to list a dir in tree format" , "enter".green() , "tree".bright_blue() , "<Path| default value = .>".bright_purple());
         }
         "--about" => {
             println!("{}HyperKit is a modern, extensible, and lightweight command-line environment built to unify the tools you need into one powerful workspace." , "@".bright_green() )
@@ -162,9 +163,9 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     }
 
     pub fn rn(f:&str , t:&str) -> std::result::Result<() , HyperkitError> {
-        let t = format!("{}+{}" , &f , &t);
+        let tt = format!("{} or {}" , &f , &t);
 
-        fs::rename(&f, &t).errh(Some(t.to_string()))._success_res("rn", "Renamed successfully").ughf()?;
+        fs::rename(&f, &t).errh(Some(tt.to_string()))._success_res("rn", "Renamed successfully").ughf()?;
         Ok(())
     }
 

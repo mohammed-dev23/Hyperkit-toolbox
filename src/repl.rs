@@ -332,11 +332,12 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
                 }
             }
             "tree" => {
-                let path = token(&data, 1).checker(Some("path".to_string())).ughf();
+                let path = token(&data, 1).checker(None);
                 if let Ok(o) = path {
                     apps::treee(o).ugh();
                 } else {
-                    continue;
+                    let path = String::from(".");
+                    apps::treee(path).ugh();
                 }
             }
             "end" => {

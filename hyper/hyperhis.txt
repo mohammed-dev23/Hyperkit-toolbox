@@ -1,54 +1,4 @@
 #V2
-ls
-clean
-see
-clean
-go back
-end
-clean
-ls
-see
-clean
-\\
-\\\\
-/
-\\
-/
-\\/
-/
-see
-clean
-end
-clean
-see
-clean
-test
-end
-clean
-test
-end
-clean
-test
-clean
-test
-clea
-clean
-end
-test
-clean
-end
-test
-end
-clean
-test
-end
-clean
-test
-end
-clean
-test
-clean
-see
 clean
 find sudo
 clean
@@ -97,5 +47,55 @@ end
 emd
 end
 cle
+clean
+end
+clean
+go programming/notes/
+see
+rn girhub_token.txt github_token.txt
+see
+end
+clean
+go programming/notes/
+see
+rn girhub_token.txt github_token.txt
+end
+clean
+see
+go programming/notes/
+see
+clean
+see
+rn girhub_token.txt+github_token.txt github_token.txt
+see
+clean
+end
+clean
+tree
+clean
+go programming/notes/
+tre
+tree
+clean
+go back
+see
+tree
+clean
+end
+clean
+see
+clean
+see
+go .profile
+see
+go .profile
+go .vscode/
+see
+clean
+see
+tree
+clean
+help
+help --built-in-apps
 clean
 end

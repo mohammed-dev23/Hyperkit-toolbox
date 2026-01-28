@@ -122,7 +122,7 @@ pub mod cli {
         },
         #[command(about = "\x1b[33m\x1b[1m -use it to list a directory in tree format- \x1b[0m\x1b[0m", color = ColorChoice::Always)]
         Tree {
-            #[arg(short = 's' , value_name = "Path" , required = true , help = "the path of the directory you want to list")]
+            #[arg(short = 's' , value_name = "Path" , default_value = "." , help = "the path of the directory you want to list")]
             path:String
         }
     }
