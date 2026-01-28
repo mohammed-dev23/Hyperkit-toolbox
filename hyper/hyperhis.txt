@@ -1,9 +1,4 @@
 #V2
-go mohammed/
-see
-clean
-end
-clean
 ls
 clean
 see
@@ -97,5 +92,10 @@ go back
 see
 clean
 tree sys/
+clean
+end
+emd
+end
+cle
 clean
 end

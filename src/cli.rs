@@ -1,6 +1,6 @@
 pub mod cli {
     use clap::{ColorChoice, Parser, Subcommand};
-    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, rn}, safe::HyperkitError}};
+    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, rn}, safe::{HyperkitError, Ugh}}};
 
     #[derive(Parser)]
     #[command(version , color = ColorChoice::Always)]
@@ -119,6 +119,11 @@ pub mod cli {
             src_dir:String,
             #[arg(short = 'r' , value_name = "Name" , help = "the name of the new file you after extracion or composriong" , default_value = "")]
             res_dir:String
+        },
+        #[command(about = "\x1b[33m\x1b[1m -use it to list a directory in tree format- \x1b[0m\x1b[0m", color = ColorChoice::Always)]
+        Tree {
+            #[arg(short = 's' , value_name = "Path" , required = true , help = "the path of the directory you want to list")]
+            path:String
         }
     }
 
@@ -161,6 +166,7 @@ pub mod cli {
                 let res_dir = res_dir;
                 apps::cli_zip(op.as_str(), files, file_name.as_str(), src_dir.as_str(), res_dir.as_str())?;
             }
+            Some(Commandd::Tree { path }) => apps::treee(path).ugh(),
             None => {}
         }
         Ok(())
