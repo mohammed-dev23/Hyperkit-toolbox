@@ -1,71 +1,4 @@
 #V2
-clean
-find sudo
-clean
-see
-temp
-clean
-see
-clean
-end
-clean
-tree /home/mohammed/
-clean
-tree /home/mohammed/sys/
-tree /home/mohammed/programming/Rust/
-clear
-clean
-ls
-see
-go .cargo/
-see
-clean
-tree go back
-go back
-clean
-tree
-clean
-tree .config/
-clean
-end
-clean
-tree .config/
-clean
-end
-clean
-tree .config/
-clean
-see
-go sys/
-go bacl
-go back
-see
-clean
-tree sys/
-clean
-end
-emd
-end
-cle
-clean
-end
-clean
-go programming/notes/
-see
-rn girhub_token.txt github_token.txt
-see
-end
-clean
-go programming/notes/
-see
-rn girhub_token.txt github_token.txt
-end
-clean
-see
-go programming/notes/
-see
-clean
-see
 rn girhub_token.txt+github_token.txt github_token.txt
 see
 clean
@@ -97,5 +30,72 @@ tree
 clean
 help
 help --built-in-apps
+clean
+end
+clean
+tree
+clean
+go sys/
+tree
+end
+clean
+test
+clean
+end
+clean
+test
+end
+test
+clean
+test
+clean
+end
+clean
+see
+clean
+end
+clean
+dnsal
+ndsalkndas
+dnsaldsa
+dnsakldna
+dnaskdlasd
+dsnadlsand
+dnsakldnas
+sdnsalda
+clean
+see
+clean
+run fasteftch
+clean
+run fastefetch
+end
+clean
+wh
+clean
+see
+clean
+see
+go sys/
+clean
+see
+forge test.txt
+clean
+see
+burn test.txt
+see
+cle
+clean
+end
+clean
+see
+go 
+go sys/
+clean
+see
+forge test.txt
+burn test.txt
+clean
+see
 clean
 end

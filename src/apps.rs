@@ -14,10 +14,12 @@ use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
 
 use crate::backend::{clean::read_file_cont,safe::{ErrH, HyperkitError, Success}};
+use crate::toml::toml;
 use base64::{prelude::{BASE64_STANDARD, BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE}, *};
 
 pub fn calc (math:&String) {
     let path = tell();
+    let username = toml().customization.username;
 
     let e = match eval(&math) {
         Ok(t) => t,
@@ -28,15 +30,15 @@ pub fn calc (math:&String) {
         }
     };
 
-    println!("[{path:?}]~>[ \x1b[34m{e}\x1b[0m ]");
+    println!("[{path:?}]~[{username}]>[ \x1b[34m{e}\x1b[0m ]");
 }
 
 
 pub fn time() {
     let path= tell();
-
+    let username = toml().customization.username;
     let time = Local::now();
-    println!("[{path:?}]~>[{time}]");
+    println!("[{path:?}][{username}]~>[{time}]");
 }
 
 pub fn tar(flag:&str , the_name_of_the_file:&str , output_name:&str) -> std::result::Result<() , HyperkitError> {

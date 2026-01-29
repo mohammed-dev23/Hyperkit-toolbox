@@ -18,3 +18,5 @@ sysinfo = "0.37.2"
 zip = "7.0.0"
 clap = {version = "4.5.54" , features = ["derive" , "color"] }
 termtree = "0.5.1"
+serde = {version = "1.0.228" , features = ["derive"] }
+toml = {version = "0.9.11" , features = ["serde"]}

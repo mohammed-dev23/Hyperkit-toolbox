@@ -3,7 +3,7 @@ use colored::Colorize;
 use sysinfo::{System};
 pub const _GITHUBLINK:&str = "https://github.com/mohamemd-v1/Shell-like-toolbox-.git";
 use nix::{sys::{self, signal::{*}}, unistd::Pid};
-use crate::backend::{safe::{ErrH, HyperkitError, Success, Ugh, Ughv}, standard::{input, tell}};
+use crate::{backend::{safe::{ErrH, HyperkitError, Success, Ugh, Ughv}, standard::{input, tell}}, toml::toml};
 use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     pub fn help(helpt:String) {
        match helpt.trim() {
@@ -65,9 +65,10 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
   
     pub fn  wh() -> std::result::Result<() , HyperkitError> {
         let path = tell();
+        let username = toml().customization.username;
 
         let wh = env::current_dir().errh(None)?;
-        println!("[{path:?}]~>{}\x1b[34m{}\x1b[0m" ,"~".bright_green(), wh.display());
+        println!("[{path:?}][{username}]~>{}\x1b[34m{}\x1b[0m" ,"~".bright_green(), wh.display());
         Ok(())
     }
 
@@ -81,7 +82,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
         match dir {
             Ok(w) => {
                 for i in w {
-                    let dir = match i {Ok(t) => t, Err(e) => {println!("[{path:?}]>Error: due to {e:?}"); return Ok(());}};
+                    let dir = match i {Ok(t) => t, Err(e) => {println!("[{path:?}]~>Error: due to {e:?}"); return Ok(());}};
                     println!("   {}\x1B[94m{}\x1b[0m" ,"~".bright_green() , dir.file_name().to_string_lossy());
                 } 
             }
@@ -97,12 +98,13 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     pub fn peek(file:&str) -> std::result::Result<() , HyperkitError> {
         let path = tell();
         let fe = File::open(&file);
+        let username = toml().customization.username;
 
         if let Err(e) = &fe {
             if e.kind() == ErrorKind::NotFound {
-                println!("[{path:?}]~>{}: couldn't open the file due to [{}]" , "Error".red().bold() , "NotFound error".red().bold());
-                println!("[{path:?}]~>Do you want to make this file?");
-                print!("[{path:?}]~>({}/{}):" , "Y".green() , "N".red());
+                println!("[{path:?}][{username}]~>{}: couldn't open the file due to [{}]" , "Error".red().bold() , "NotFound error".red().bold());
+                println!("[{path:?}][{username}]~>Do you want to make this file?");
+                print!("[{path:?}][{username}]~>({}/{}):" , "Y".green() , "N".red());
                 stdout().flush().errh(None)?;
 
                 let yesorno = input()?;
@@ -131,11 +133,12 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     
     pub fn burn(path:&str) -> std::result::Result<() , HyperkitError> {
         let tell = tell();
+        let username = toml().customization.username;
 
         let burn = fs::remove_file(&path);
 
         if burn.is_ok() == true {
-                println!("[{path:?}]~>{}: [{}]" , "burn".bright_green().bold() , "file has been burned successfully".bright_green().bold());
+                println!("[{tell:?}][{username}]~>{}: [{}]" , "burn".bright_green().bold() , "file has been burned successfully".bright_green().bold());
             }
 
         if let Err(e) = burn {
@@ -146,7 +149,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
                     if let Err(e) = burn_dir {
                         if e.kind() == ErrorKind::DirectoryNotEmpty {
 
-                            print!("[{tell:?}]~>[{}/{}]: the Directory is Not Empty do you stil want to delete it? >> " , "Y".bold().green() , "N".bold().red());
+                            print!("[{tell:?}][{username}]~>[{}/{}]: the Directory is Not Empty do you stil want to delete it? >> " , "Y".bold().green() , "N".bold().red());
                             stdout().flush().errh(None)?;
 
                             let yesorno = input()?;
@@ -181,8 +184,9 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
 
     pub fn run(app:&str) -> std::result::Result<() , HyperkitError> {
         let path = tell();
+        let username = toml().customization.username;
         let run = process::Command::new(&app).output().errh(Some(app.to_string())).ughf()?;
-        println!("[{path:?}]~>\x1b[34m{}\x1b[0m" , String::from_utf8_lossy(&run.stdout));
+        println!("[{path:?}][{username}]~>\x1b[34m{}\x1b[0m" , String::from_utf8_lossy(&run.stdout));
         Ok(())
     }
 
@@ -208,6 +212,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
 
     pub fn find(file_path:&str) -> std::result::Result<() , HyperkitError> {
         use walkdir::*;
+        let username = toml().customization.username;
         let tell = tell();
         let mut err = false;
 
@@ -215,7 +220,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
 
         for i in find {
             if i.file_name() == file_path {
-                println!("[{tell:?}]~> [{}] {}: \x1b[33m{}\x1b[0m", "find".bright_green().bold(), "found at".bright_green().bold(), i.path().display() );
+                println!("[{tell:?}][{username}]~> [{}] {}: \x1b[33m{}\x1b[0m", "find".bright_green().bold(), "found at".bright_green().bold(), i.path().display() );
                 err = true;
             }
         }
@@ -230,6 +235,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     pub fn ps(_flag:&str , _pid:usize) -> std::result::Result<(), HyperkitError> {
         use sysinfo::Pid;
         
+        let username = toml().customization.username;
         let tell = tell();
         let mut sys = System::new_all();
         sys.refresh_all();
@@ -237,7 +243,7 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
             "-SF" => {
                 if _flag == "-SF" {
                         if let Some(p) = sys.process(Pid::from(_pid)) {
-                            println!("[{tell:?}]~>[{}] \x1B[1m\x1B[36m{}\x1B[0m\x1B[0m | {}:\x1B[1m\x1B[32m{}\x1B[0m\x1B[0m Gib | \x1B[1m\x1B[36m{}\x1B[0m\x1B[0m:\x1B[1m\x1B[32m{}\x1B[0m\x1B[0m Gib" ,"ps".bright_green().bold(), p.name().display() , "Disk usage".bright_yellow().bold() ,p.disk_usage().total_written_bytes as f64 / f64::from(1024).powi(3) , "memory usage".bright_yellow().bold() ,p.memory() as f64  / f64::from(1024).powi(3));
+                            println!("[{tell:?}][{username}]~>[{}] \x1B[1m\x1B[36m{}\x1B[0m\x1B[0m | {}:\x1B[1m\x1B[32m{}\x1B[0m\x1B[0m Gib | \x1B[1m\x1B[36m{}\x1B[0m\x1B[0m:\x1B[1m\x1B[32m{}\x1B[0m\x1B[0m Gib" ,"ps".bright_green().bold(), p.name().display() , "Disk usage".bright_yellow().bold() ,p.disk_usage().total_written_bytes as f64 / f64::from(1024).powi(3) , "memory usage".bright_yellow().bold() ,p.memory() as f64  / f64::from(1024).powi(3));
                     }
                         if let None = sys.process(Pid::from(_pid)) {
                             println!("[{tell:?}]~>[{}] {}: process not found or not running \x1b[1m\x1b[31m<{}>\x1b[0m\x1b[0m" , "ps".bright_green().bold() , "Error".bright_red().bold() , _pid )
@@ -258,11 +264,11 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     
     pub fn stop(pid:i32) {
         let tell = tell();
-
+        let username = toml().customization.username;
         let pid = Pid::from_raw(pid);
 
         let _kill = match sys::signal::kill(pid, SIGKILL) {
-            Ok(_) => println!("[{tell:?}]~>{}: [{}]" , "stop".bright_green().bold() , "the target has been stoped!".bright_green().bold()),
+            Ok(_) => println!("[{tell:?}][{username}]~>{}: [{}]" , "stop".bright_green().bold() , "the target has been stoped!".bright_green().bold()),
             Err(e) => {
                 println!("[{tell:?}]~>{}: due to \x1b[1m[\x1b[31m{e}]\x1b[0m\x1b[0m" , "Error".bright_red().bold())
             }
@@ -338,7 +344,7 @@ pub mod safe {
     use std::{num::{IntErrorKind, ParseIntError}};
     use colored::Colorize;
     use zip::result::ZipError;
-    use crate::{repl::GITHUBLINK, backend::{clean::ExtractOptions, standard::tell}};
+    use crate::{backend::{clean::ExtractOptions, standard::tell}, repl::GITHUBLINK, toml::toml};
 
     pub type _Result<'h ,T> = std::result::Result<T , HyperkitError>;
 
@@ -469,10 +475,10 @@ pub mod safe {
 
         fn _success(self , mas1:&str , mas2:&str) {
             let path = tell();
-
+            let username = toml().customization.username;
             match self {
                 Ok(_) => {
-                    println!("[{path:?}]~>{}: [{}]" , mas1.bright_green().bold() , mas2.bright_green().bold());
+                    println!("[{path:?}][{username}]~>{}: [{}]" , mas1.bright_green().bold() , mas2.bright_green().bold());
                     return;        
                 }
                 Err(_) => {
@@ -483,10 +489,11 @@ pub mod safe {
 
         fn _success_res(self , mas1:&str , mas2:&str ) -> Self::Out where Self: Sized {
             let path = tell();
+            let username = toml().customization.username;
 
             match self {
                 Ok(o) => {
-                    println!("[{path:?}]~>{}: [{}]" , mas1.bright_green().bold() , mas2.bright_green().bold());
+                    println!("[{path:?}][{username}]~>{}: [{}]" , mas1.bright_green().bold() , mas2.bright_green().bold());
                     return Ok(o);
                 }
                 Err(e) => {

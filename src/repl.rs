@@ -1,6 +1,7 @@
 use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip};
 use crate::backend::safe::{ ErrH, HyperkitError, Ugh, Ughv};
 use crate::backend::{commands, standard::tell, parser::* };
+use crate::toml::{self, toml};
 use std::{env::* , borrow::Cow::{self, Owned}};
 use colored::*;
 use rustyline::{Completer, Hinter, Validator , error::ReadlineError, completion::FilenameCompleter , highlight::{CmdKind, Highlighter, MatchingBracketHighlighter}, hint::HistoryHinter, 
@@ -57,6 +58,7 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
             hin:HistoryHinter::new(),
         };
 
+        let filehistory = toml::toml().dependencies.historyfilepath;
 
         let mut def = Editor::with_config(configdef).unwrap();
         def.set_helper(Some(enveditor));
@@ -64,7 +66,7 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
         def.bind_sequence(KeyEvent::alt('b'), Cmd::HistorySearchBackward);
 
 
-        def.load_history("/home/mohammed/programming/Rust/practice/Hyperkit/hyper/hyperhis.txt").unwrap_or_else(|e| {
+        def.load_history(&filehistory).unwrap_or_else(|e| {
             let path = tell();
             match e {
                 ReadlineError::Io(e) => {
@@ -78,8 +80,8 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
         });
     loop {
         let path = tell();
-        
-        let f  = format!("[{path:?}]~>");
+        let username = toml().customization.username;
+        let f  = format!("[{path:?}][{username}]~>");
         
         let void = match def.readline(&f) {
             Ok(o) => {
@@ -352,7 +354,7 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
         }
     }
     let path = tell();
-        def.save_history("/home/mohammed/programming/Rust/practice/Hyperkit/hyper/hyperhis.txt").unwrap_or_else(|e| 
+        def.save_history(&filehistory).unwrap_or_else(|e| 
             {eprintln!("[{path:?}]~>{}: due to {}" , "Error".bright_red().bold() , e.to_string().bright_red().bold())});
         
         Ok(())
