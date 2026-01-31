@@ -1,6 +1,6 @@
 pub mod cli {
     use clap::{ColorChoice, Parser, Subcommand};
-    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, rn}, safe::{HyperkitError, Ugh}}};
+    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, hostname, rn}, safe::{HyperkitError, Ugh}}};
 
     #[derive(Parser)]
     #[command(version , color = ColorChoice::Always)]
@@ -37,7 +37,7 @@ pub mod cli {
         Clone {
             #[arg(long = "target" , help = "the targted file you want to clone" , required = true , value_name = "File/Path")]
             target:String,
-            #[arg(long = "output" , help = "the output name of the cloned file or the name of exsisted one" , default_value = "output"  , value_name = "New Name/Exsisted file")]
+            #[arg(long = "output" , help = "the output name of the cloned file or the name of existed one" , default_value = "output"  , value_name = "New Name/existed file")]
             outputname:String
         },
         #[command(about = "\x1b[33m\x1b[1m -use it if you want to make a new file but don't forget to add the format with it- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
@@ -47,7 +47,7 @@ pub mod cli {
         },
         #[command(about = "\x1b[33m\x1b[1m -a calculator- \x1b[0m\x1b[0m")]
         Calc {
-            #[arg(long = "slove" , help = "put the math problome you want to slove" , required = true , value_name = "Math")]
+            #[arg(long = "" , help = "put the math problome you want to solve" , required = true , value_name = "Math")]
             math:String
         },
         #[command(about = "\x1b[33m\x1b[1m -use it to move files from place to another- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
@@ -86,12 +86,12 @@ pub mod cli {
         Time,
         #[command(about = "\x1b[33m\x1b[1m -use it to see the running process in your system and search for them- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Ps {
-            #[arg(short = 'f', help = "choose one of the two opration you can do <SF:to search for prosses by there pid/A:to list all the running prosses>" , value_name = "SF/A" , default_value = None)]
+            #[arg(short = 'f', help = "choose one of the two opration you can do <SF:to search for processes by there pid/A:to list all the running processes>" , value_name = "SF/A" , default_value = None)]
             flag:Option<String>,
             #[arg(long = "pid" ,help = "put the process pid you want to search for" , value_name = "pid" , default_value = None)]
             pid:Option<usize>
         },
-        #[command(about  = "\x1b[33m\x1b[1m -use it to stop running prosses in your system by there pid- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
+        #[command(about  = "\x1b[33m\x1b[1m -use it to stop running processes in your system by there pid- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Stop {
             #[arg(long = "pid" , required = true , help = "add the pid number of the process you want to shutdown" , value_name = "pid")]
             pid:i32
@@ -124,6 +124,13 @@ pub mod cli {
         Tree {
             #[arg(short = 's' , value_name = "Path" , default_value = "." , help = "the path of the directory you want to list")]
             path:String
+        },
+        #[command(about = "\x1b[33m\x1b[1m -use it to see your hostname or edit it- \x1b[0m\x1b[0m", color = ColorChoice::Always)]
+        Hostname {
+            #[arg(help = "use it to see your host name (show/set)" , required = true)]
+            flag:String,
+            #[arg(help = "use it to add edit the host name" , value_name = "Name" , required = false , default_value = "")]
+            hostnamee:String,
         }
     }
 
@@ -167,6 +174,10 @@ pub mod cli {
                 apps::cli_zip(op.as_str(), files, file_name.as_str(), src_dir.as_str(), res_dir.as_str())?;
             }
             Some(Commandd::Tree { path }) => apps::treee(path).ugh(),
+            Some(Commandd::Hostname { flag, hostnamee }) => {
+                let t = format!("--{}" , flag);
+                hostname(&t,hostnamee ).ugh();
+            } 
             None => {}
         }
         Ok(())

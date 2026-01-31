@@ -2,7 +2,7 @@ pub mod commands {
 use colored::Colorize;
 use sysinfo::{System};
 pub const _GITHUBLINK:&str = "https://github.com/mohamemd-v1/Shell-like-toolbox-.git";
-use nix::{sys::{self, signal::{*}}, unistd::Pid};
+use nix::{sys::{self, signal::{*}}, unistd::Pid  , unistd::{gethostname , sethostname}};
 use crate::{backend::{safe::{ErrH, HyperkitError, Success, Ugh, Ughv}, standard::{input, tell}}, toml::toml};
 use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     pub fn help(helpt:String) {
@@ -21,8 +21,9 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
             println!("   *{} {} {} to run a program" , "enter".green() , "run".bright_blue() , "<App>".bright_purple() );
             println!("   *{} {} {} to move a file from place to another" , "enter".green() , "mv".bright_blue() , "<Name>".bright_purple());
             println!("   *{} {} {} to find the dir of a file" , "enter".green() , "find".bright_blue() , "<FileName>".bright_purple());
-            println!("   *{} {} {} to list and lookup prosses" , "enter".green() , "ps".bright_blue() , "<Flag[-SF: search for pros , -A: list all the pros]>".bright_purple());
-            println!("   *{} {} {} to stop prosses |{}|" ,  "enter".green() , "stop".bright_blue() , "<PID>".bright_purple() , "#Warning do not even attempt to enter latters only numbers is allowed otherwise it will stop itself!!".bright_red().bold());
+            println!("   *{} {} {} to list and lookup processes" , "enter".green() , "ps".bright_blue() , "<Flag[-SF: search for pros , -A: list all the pros]>".bright_purple());
+            println!("   *{} {} {} to stop processes |{}|" ,  "enter".green() , "stop".bright_blue() , "<PID>".bright_purple() , "#Warning do not even attempt to enter latters only numbers is allowed otherwise it will stop itself!!".bright_red().bold());
+            println!("   *{} {} {} {} to see and edit the hostname" , "enter".green() , "hostname".bright_blue() , "<Flag: --show/--set>".bright_purple() , "<--set: <NewHostName>>".bright_yellow());
         }
         "--built-in-apps" => {
             println!("   *{} {} {} to use the built-in calculator" , "enter".green() , "calc".bright_blue() , "<Math>".purple());
@@ -263,16 +264,25 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
     }
     
     pub fn stop(pid:i32) {
-        let tell = tell();
-        let username = toml().customization.username;
         let pid = Pid::from_raw(pid);
 
-        let _kill = match sys::signal::kill(pid, SIGKILL) {
-            Ok(_) => println!("[{tell:?}][{username}]~>{}: [{}]" , "stop".bright_green().bold() , "the target has been stoped!".bright_green().bold()),
-            Err(e) => {
-                println!("[{tell:?}]~>{}: due to \x1b[1m[\x1b[31m{e}]\x1b[0m\x1b[0m" , "Error".bright_red().bold())
-            }
-        };
+        let _kill = sys::signal::kill(pid, SIGKILL).errh(Some(pid.to_string()))._success_res("stop", "the target has been stoped!").ughv();
+    }
+
+    pub fn hostname(flag:&str , newhostanme:&str) -> std::result::Result<() , HyperkitError> {
+        let tell = tell();
+        let username = toml().customization.username;
+
+        if flag == "--show" {
+            let hostname = gethostname().errh(None).ughv().to_string_lossy().to_string();
+            println!("[{tell:?}][{username}]~>{}: [{}]  " , "HostName".bright_green().bold() , hostname.bright_green().bold() );
+        }
+
+        if flag == "--set" {
+            sethostname(newhostanme).errh(Some(newhostanme.to_string()))._success_res("HostName succeeded: ", newhostanme).ughv();
+        }
+
+        Ok(())
     }
 }
 
@@ -343,6 +353,7 @@ pub mod safe {
     use core::fmt;
     use std::{num::{IntErrorKind, ParseIntError}};
     use colored::Colorize;
+    use nix::errno::Errno;
     use zip::result::ZipError;
     use crate::{backend::{clean::ExtractOptions, standard::tell}, repl::GITHUBLINK, toml::toml};
 
@@ -355,6 +366,7 @@ pub mod safe {
         FileError(FileError),
         ArchiveErr(ArchiveErr),
         MissingParameter(Option<String>),
+        SystemErr(SystemErr),
         ShouldNotHappen,
     }
 
@@ -396,6 +408,21 @@ pub mod safe {
         UnsupportedArc(Option<String>),
         InvalidArchive(Option<String>),
         StripPrefixErr(Option<String>),
+    }
+
+    #[derive(Debug)]
+    pub enum SystemErr {
+        Permissiondenied(Option<String>),
+        Invalidargument(Option<String>),
+        ResourceTempUnavailable(Option<String>),
+        OperationNpermitted(Option<String>),
+        OutOfMemory(Option<String>),
+        ResourceBusy(Option<String>),
+        InterruptedCall(Option<String>),
+        DiskFull(Option<String>),
+        BadAddress(Option<String>),
+        NameTooLong(Option<String>),
+        UnknownSysErr(Option<String>)
     }
 
     impl fmt::Display for HyperkitError {
@@ -440,6 +467,20 @@ pub mod safe {
                 }
 
                 HyperkitError::MissingParameter(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"missing required parameter".bright_red() , err_res.extract().bright_yellow().bold()),
+
+                HyperkitError::SystemErr(e) => match e {
+                    SystemErr::BadAddress(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Bad memory address".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::DiskFull(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"No space left on device".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::InterruptedCall(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"System call was interrupted".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::Invalidargument(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Invalid argument provided".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::NameTooLong(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Name exceeds maximum length".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::OperationNpermitted(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Operation not permitted".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::OutOfMemory(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Out of memory".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::Permissiondenied(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Permission denied".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::ResourceBusy(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Resource is busy".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::ResourceTempUnavailable(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Resource temporarily unavailable".bright_red() , err_res.extract().bright_yellow().bold()),
+                    SystemErr::UnknownSysErr(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Unknown system error".bright_red() , err_res.extract().bright_yellow().bold()),
+                }
             }
         }
     } 
@@ -588,6 +629,34 @@ pub mod safe {
 
                     };
                     return Err(hypere);
+                }
+            }
+        }
+    }
+
+    impl<T> ErrH for std::result::Result<T , Errno> {
+        type Out = std::result::Result<T , HyperkitError>;
+
+        fn errh(self , res:Option<String>) -> Self::Out where Self: Sized {
+            match self {
+                Ok(o) => Ok(o),
+                Err(e) => {
+                    let hypererr = match e {
+                        Errno::EACCES => HyperkitError::SystemErr(SystemErr::Permissiondenied(res)),
+                        Errno::EINVAL => HyperkitError::SystemErr(SystemErr::Invalidargument(res)),
+                        Errno::EAGAIN => HyperkitError::SystemErr(SystemErr::ResourceTempUnavailable(res)),
+                        Errno::EPERM => HyperkitError::SystemErr(SystemErr::OperationNpermitted(res)),
+                        Errno::ENOMEM => HyperkitError::SystemErr(SystemErr::OutOfMemory(res)),
+                        Errno::EBUSY => HyperkitError::SystemErr(SystemErr::ResourceBusy(res)),
+                        Errno::EINTR => HyperkitError::SystemErr(SystemErr::InterruptedCall(res)),
+                        Errno::ENOSPC => HyperkitError::SystemErr(SystemErr::DiskFull(res)),
+                        Errno::EFAULT => HyperkitError::SystemErr(SystemErr::BadAddress(res)),
+                        Errno::ENAMETOOLONG => HyperkitError::SystemErr(SystemErr::NameTooLong(res)),
+                        Errno::UnknownErrno => HyperkitError::SystemErr(SystemErr::UnknownSysErr(res)),
+
+                        _ => HyperkitError::ShouldNotHappen
+                    };
+                    return Err(hypererr);
                 }
             }
         }

@@ -1,83 +1,4 @@
 #V2
-rn girhub_token.txt+github_token.txt github_token.txt
-see
-clean
-end
-clean
-tree
-clean
-go programming/notes/
-tre
-tree
-clean
-go back
-see
-tree
-clean
-end
-clean
-see
-clean
-see
-go .profile
-see
-go .profile
-go .vscode/
-see
-clean
-see
-tree
-clean
-help
-help --built-in-apps
-clean
-end
-clean
-tree
-clean
-go sys/
-tree
-end
-clean
-test
-clean
-end
-clean
-test
-end
-test
-clean
-test
-clean
-end
-clean
-see
-clean
-end
-clean
-dnsal
-ndsalkndas
-dnsaldsa
-dnsakldna
-dnaskdlasd
-dsnadlsand
-dnsakldnas
-sdnsalda
-clean
-see
-clean
-run fasteftch
-clean
-run fastefetch
-end
-clean
-wh
-clean
-see
-clean
-see
-go sys/
-clean
 see
 forge test.txt
 clean
@@ -98,4 +19,83 @@ burn test.txt
 clean
 see
 clean
+end
+clean
+see
+clean
+see
+clean
+end
+clean
+end
+clean
+nd
+clean
+help --built-in-apps
+clean
+see
+clean
+see
+clean
+see
+clean
+end
+clean
+see
+clean
+see
+clean
+end
+clean
+end
+clean
+see
+clean
+see
+clean
+end
+clean
+see
+clean
+end
+clean
+end
+clean
+see
+clean
+what's up
+clean
+see
+clean
+end
+clean
+test --show
+clean
+end
+test --show
+clean
+end
+clean
+test
+test --show
+clean
+end
+clean
+test --show
+clean
+end
+clean
+test --show
+test --set test
+clean
+test --set test
+clean
+end
+xl
+clean
+see
+clean
+help --commands
+clean
+emd
 end

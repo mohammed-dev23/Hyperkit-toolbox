@@ -13,7 +13,7 @@ base64 = "0.22.1"
 hex = "0.4.3"
 urlencoding = "2.1.3"
 walkdir = "2.5.0"
-nix = {version = "0.30.1" , features = ["signal"]}
+nix = {version = "0.30.1" , features = ["signal", "hostname"]}
 sysinfo = "0.37.2"
 zip = "7.0.0"
 clap = {version = "4.5.54" , features = ["derive" , "color"] }

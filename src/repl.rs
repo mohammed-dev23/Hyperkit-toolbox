@@ -1,4 +1,5 @@
 use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip};
+use crate::backend::commands::hostname;
 use crate::backend::safe::{ ErrH, HyperkitError, Ugh, Ughv};
 use crate::backend::{commands, standard::tell, parser::* };
 use crate::toml::{self, toml};
@@ -340,6 +341,17 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
                 } else {
                     let path = String::from(".");
                     apps::treee(path).ugh();
+                }
+            }
+            "hostname" => {
+                let flag = token(&data, 1).checker(Some("flag".to_string())).ughf();
+                let newhostanme = token(&data, 2);
+
+                if let Ok(o) = flag {
+                    hostname(&o, &newhostanme).ugh();
+                }
+                else {
+                    continue;
                 }
             }
             "end" => {
