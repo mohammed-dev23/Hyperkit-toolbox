@@ -1,6 +1,6 @@
 pub mod cli {
     use clap::{ColorChoice, Parser, Subcommand};
-    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, hostname, rn}, safe::{HyperkitError, Ugh}}};
+    use crate::{apps::{self, FileZipArg}, backend::{clean::ExtractOptions, commands::{self, hostname, rn}, safe::{HyperkitError, Ugh}}, toml::configer};
 
     #[derive(Parser)]
     #[command(version , color = ColorChoice::Always)]
@@ -131,6 +131,17 @@ pub mod cli {
             flag:String,
             #[arg(help = "use it to add edit the host name" , value_name = "Name" , required = false , default_value = "")]
             hostnamee:String,
+        },
+        #[command(about = "\x1b[33m\x1b[1m -use it to configer your file from the cli/repl interface- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
+        Configer {
+            #[arg(help = "chose on of the two flags (username/hispath)" , required = true )]
+            flag:String,
+            #[arg(help = "the opration you want to run (set)" , required = true)]
+            opration:String,
+            #[arg(help = "the username you want to make the opration on" , short = 'u' , required = false , group = "user" , default_value = "")]
+            username:String,
+            #[arg(help = "the history path you want to make the opration on" , short = 'p' , required = false , group = "path" , default_value = "")]
+            hispath:String,
         }
     }
 
@@ -178,6 +189,10 @@ pub mod cli {
                 let t = format!("--{}" , flag);
                 hostname(&t,hostnamee ).ugh();
             } 
+            Some(Commandd::Configer { flag, opration, username, hispath }) => {
+                let opration = format!("--{}" , opration);
+                configer(&flag, &username, &hispath, &opration).ugh();
+            },
             None => {}
         }
         Ok(())

@@ -1,101 +1,101 @@
 #V2
 see
+clean
+end
+clean
+configer username --set dev
+clean
+see
+clean
+end
+clean
+configer username --set dev
+configer username --set tttt
+clean
+see
+clean
+configer username --set dev
+clean
+end
+clean
+configer username --set dev
+clean
+configer username --set mohammed
+clean
+configer username --set dev
+clean
+end
+clean
+see
+clean
+configer username --set hey?
+clean
+configer username --set works
+configer username --set fev
+clean
+configer username --set dev
+clean
+see
+clean
+see
+go Documents/
+see
+clean
+touch test.txt
 forge test.txt
+see
+clean
+wh
+configer hispath --set /home/mohammed/Documents
+end
+clean
+configer hispath --set /home/mohammed/Documents/test.txt
+clean
+configer hispath --set /home/mohammed/Documents/test.txt
+end
+clean
+configer hispath --set /home/mohammed/Documents/test.txt
+see
+clean
+configer username --set dev
+c;ean
+clean
+end
+clean
+configer hispath --set /home/mohammed/Documents/test.txt
+configer hispath --set dev
+clean
+end
+clean
+configer hispath --set /home/mohammed/Documents/test.txt
 clean
 see
+sdnkasl
+clean
+see
+clean
+go Documents/test.txt
+go Documents/
+see
+peek test.txt
+end
+clean
+go Documents/
+see
+peek test.txt
 burn test.txt
-see
-cle
-clean
-end
-clean
-see
-go 
-go sys/
-clean
-see
-forge test.txt
-burn test.txt
 clean
 see
 clean
 end
 clean
-see
-clean
-see
+configer username --set dev
 clean
 end
-clean
-end
-clean
-nd
-clean
-help --built-in-apps
-clean
-see
-clean
-see
-clean
-see
-clean
-end
-clean
-see
-clean
-see
-clean
-end
-clean
-end
-clean
-see
-clean
-see
-clean
-end
-clean
-see
-clean
-end
-clean
-end
-clean
-see
-clean
-what's up
-clean
-see
-clean
-end
-clean
-test --show
-clean
-end
-test --show
-clean
-end
-clean
-test
-test --show
-clean
-end
-clean
-test --show
-clean
-end
-clean
-test --show
-test --set test
-clean
-test --set test
-clean
-end
-xl
-clean
-see
-clean
 help --commands
+clear
 clean
-emd
+end
+configer username --set dev
+clean
 end

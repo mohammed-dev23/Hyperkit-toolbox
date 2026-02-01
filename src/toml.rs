@@ -1,7 +1,8 @@
-use std::{fs, io::Read, mem::replace};
-
+use std::{fs, io::Read, path::PathBuf};
+use colored::*;
 use serde::{Deserialize};
-use crate::backend::{clean::read_file_cont, safe::{ErrH, HyperkitError, Ugh, Ughv}, standard::tell};
+use walkdir::{WalkDir};
+use crate::backend::{clean::{ExtractOptions, read_file_cont}, safe::{ErrH, HyperkitError, Success, Ugh, Ughv}, standard::tell};
 
 #[derive(Deserialize)]
 pub struct  Config {
@@ -19,33 +20,76 @@ pub struct Customization {
 }
 
 pub fn toml() -> Config {
-    let read_config = read_file_cont("/home/mohammed/programming/Rust/practice/Hyperkit/Hyper.toml").ughv();
+    let confi_file_path = connfig_file_finder().ughv();
+    let read_config = read_file_cont(&confi_file_path.to_str().extract()).ughv();
     let toml_des : Config = toml::from_str(&read_config).unwrap();
     return toml_des
 }
 
+fn write_to_config(value:String) -> std::result::Result<() , HyperkitError> {
+    let confi_file_path = connfig_file_finder()?;
+    let okay = std::fs::write(confi_file_path, value).errh(None).ughf();
+    okay
+}
+
+fn connfig_file_finder() -> std::result::Result<PathBuf , HyperkitError> {
+    for i in WalkDir::new("/home/mohammed").into_iter().map(|s| s.map_err(|s| s.into_io_error())) {
+        let i = i.errh(Some("toml.rs/38".to_string()))?;
+
+        if i.file_name() ==  "Hyper.toml" {
+            return Ok(i.path().to_path_buf()) ;       
+        }
+    }
+    Err(HyperkitError::from(HyperkitError::ShouldNotHappen))
+}
+
+fn help_configer_seter(username:&str , hispath:&str) -> std::result::Result<() , HyperkitError> {
+    let mut done = String::new();
+
+    let find_config = connfig_file_finder()?;
+
+    fs::File::open(find_config)
+    .errh(None).ughf()?.read_to_string(&mut done).errh(None).ughv();
+
+    if !username.contains("/") {
+        let test = done.replace(&toml().customization.username, &username);
+        let okay =  write_to_config(test);
+        return Ok(okay?);
+    } 
+    else {
+        let test = done.replace(&toml().dependencies.historyfilepath, &hispath);
+        let okay = write_to_config(test);
+        return Ok(okay?);
+    }
+}
+
 pub fn configer (flag:&str , username:&str , hispath:&str , opration:&str) -> std::result::Result<() , HyperkitError> {
     let tell = tell();
-    let mut open = fs::File::open("/home/mohammed/programming/Rust/practice/Hyperkit/Hyper.toml").errh(None).ughf()?;
 
     match flag {
         "username" => {
             match opration {
                 "--set" => {
-                    let replacer = todo!();  
+                    help_configer_seter(&username, &hispath)._success_res("Configer", "succeeded").ugh();
                 },
-                _ => {todo!()}
+                _ => {
+                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No opration was supplied".red().bold());
+                }
             }
         },
-        "HisPath" => {
+        "hispath" => {
             match opration {
                 "--set" => {
-
+                    help_configer_seter(&username, &hispath)._success_res("Configer", "succeeded").ugh();
                 }
-                _ => {todo!()}
+                _ => {
+                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No opration was supplied".red().bold());
+                }
             }
         },
-        _ => {todo!()}
+        _ => {
+            println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No flag was supplied".red().bold());
+        }
     }
     Ok(())
 }

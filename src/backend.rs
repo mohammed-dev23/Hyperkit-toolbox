@@ -23,7 +23,8 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
             println!("   *{} {} {} to find the dir of a file" , "enter".green() , "find".bright_blue() , "<FileName>".bright_purple());
             println!("   *{} {} {} to list and lookup processes" , "enter".green() , "ps".bright_blue() , "<Flag[-SF: search for pros , -A: list all the pros]>".bright_purple());
             println!("   *{} {} {} to stop processes |{}|" ,  "enter".green() , "stop".bright_blue() , "<PID>".bright_purple() , "#Warning do not even attempt to enter latters only numbers is allowed otherwise it will stop itself!!".bright_red().bold());
-            println!("   *{} {} {} {} to see and edit the hostname" , "enter".green() , "hostname".bright_blue() , "<Flag: --show/--set>".bright_purple() , "<--set: <NewHostName>>".bright_yellow());
+            println!("   *{} {} {} {} to see and edit the hostname" , "enter".green() , "hostname".bright_blue() , "<Flags: --show/--set>".bright_purple() , "<--set: <NewHostName>>".bright_yellow());
+            println!("   *{} {} {} {} {} to config the config file" , "enter".green() , "Configer".bright_blue() , "<Flags:username/hispath>".bright_purple() , "<Opration:--set>".bright_yellow() , "<Value>".bright_cyan())
         }
         "--built-in-apps" => {
             println!("   *{} {} {} to use the built-in calculator" , "enter".green() , "calc".bright_blue() , "<Math>".purple());
@@ -355,7 +356,7 @@ pub mod safe {
     use colored::Colorize;
     use nix::errno::Errno;
     use zip::result::ZipError;
-    use crate::{backend::{clean::ExtractOptions, standard::tell}, repl::GITHUBLINK, toml::toml};
+    use crate::{backend::{clean::{ExtractOptions, ExtractOptionsErr}, standard::tell}, repl::GITHUBLINK, toml::toml};
 
     pub type _Result<'h ,T> = std::result::Result<T , HyperkitError>;
 
@@ -388,6 +389,7 @@ pub mod safe {
         ZeroOrEmputy(Option<String>),
         OverFlow(Option<String>),
         InvalidDigit(Option<String>),
+        ExtarctingErr(Option<String>),
     }
 
     #[derive(Debug)]
@@ -434,7 +436,8 @@ pub mod safe {
                     ParsingErr::NotNumber(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Expected a number, but no input was provided".bright_red() , err_res.extract().bright_yellow().bold()),
                     ParsingErr::InvalidDigit(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Invalid digits".bright_red() , err_res.extract().bright_yellow().bold()),
                     ParsingErr::OverFlow(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Number is out of range".bright_red() , err_res.extract().bright_yellow().bold()),
-                    ParsingErr::ZeroOrEmputy(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Zero is not a valid value".bright_red() , err_res.extract().bright_yellow().bold())
+                    ParsingErr::ZeroOrEmputy(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Zero is not a valid value".bright_red() , err_res.extract().bright_yellow().bold()),
+                    ParsingErr::ExtarctingErr(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"extracting faild".bright_red() , err_res.extract().bright_yellow().bold()),
                 }
 
                 HyperkitError::FileError(e) => match e {
@@ -662,6 +665,39 @@ pub mod safe {
         }
     }
 
+    impl<T> ErrH for std::result::Result<T, Option<std::io::Error>> {
+        type Out = std::result::Result<T, HyperkitError> ;
+
+        fn errh(self , res: Option<String>) -> Self::Out where Self: Sized {
+            match self {
+                Ok(o) => return Ok(o),
+                Err(e) => {
+                    let hypere = match e.extarct(Some("backend/675".to_string()))?.kind() {
+                        std::io::ErrorKind::NotFound => HyperkitError::FileError(FileError::FileNotFound(res)),
+                        std::io::ErrorKind::FileTooLarge => HyperkitError::FileError(FileError::FileTooLarge(res)),
+                        std::io::ErrorKind::NotADirectory => HyperkitError::FileError(FileError::NotADirectory(res)),
+                        std::io::ErrorKind::IsADirectory => HyperkitError::FileError(FileError::IsADirectory(res)),
+                        std::io::ErrorKind::InvalidFilename => HyperkitError::FileError(FileError::InvalidFilename(res)),
+                        std::io::ErrorKind::PermissionDenied => HyperkitError::FileError(FileError::PermissionDenied(res)),
+                        std::io::ErrorKind::ReadOnlyFilesystem => HyperkitError::FileError(FileError::ReadOnlyFile(res)),
+                        std::io::ErrorKind::Unsupported => HyperkitError::FileError(FileError::UnsupportedFileType(res)),
+
+                        std::io::ErrorKind::Interrupted => HyperkitError::InputReadingErr(InputReadingErr::Interrupted(res)),
+                        std::io::ErrorKind::InvalidData => HyperkitError::InputReadingErr(InputReadingErr::BadEncoding(res)),
+                        std::io::ErrorKind::BrokenPipe => HyperkitError::InputReadingErr(InputReadingErr::PipeBroken(res)),
+                        std::io::ErrorKind::UnexpectedEof => HyperkitError::InputReadingErr(InputReadingErr::StreamClosed(res)),
+                        std::io::ErrorKind::OutOfMemory => HyperkitError::InputReadingErr(InputReadingErr::OutOfMemory(res)),
+                        std::io::ErrorKind::Other => HyperkitError::InputReadingErr(InputReadingErr::Unknown(res)),
+                        std::io::ErrorKind::WouldBlock => HyperkitError::InputReadingErr(InputReadingErr::Blocked(res)),
+
+                        _ => HyperkitError::ShouldNotHappen
+                    };
+                    return Err(hypere);
+                }
+            }
+        }
+    }
+
     impl<T> Ugh for std::result::Result<T , HyperkitError> {
         type Out = std::result::Result<T , HyperkitError>;
 
@@ -714,6 +750,12 @@ pub mod clean {
         fn extract(&self) -> Self::Out where Self: Sized;
     }
 
+    pub trait ExtractOptionsErr {
+        type Out;
+
+        fn extarct(self, res: Option<String>) -> Self::Out where Self: Sized; 
+    }
+
     impl<T: Default + Clone> ExtractOptions for Option<T> {
         type Out = T;
 
@@ -724,6 +766,19 @@ pub mod clean {
             else {
                 eprintln!("[{}]~> due to {}" , "Error".bright_red().bold(), "extracting faild".bright_red().bold());
                 return T::default();
+            }
+        }
+    }
+
+    impl<E> ExtractOptionsErr for Option<E> {
+        type Out = std::result::Result<E , HyperkitError>;
+
+        fn extarct(self, res:Option<String>) -> Self::Out where Self: Sized {
+            if let Some(o) = self {
+                Ok(o)
+            }
+            else {
+                return Err(HyperkitError::ParsingErr(super::safe::ParsingErr::ExtarctingErr(res)));
             }
         }
     }

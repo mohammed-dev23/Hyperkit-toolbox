@@ -354,6 +354,16 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
                     continue;
                 }
             }
+            "configer" => {
+                let flag = token(&data, 1).checker(Some("flag".to_string())).ughf();
+                let op = token(&data, 2).checker(Some("--set".to_string())).ughf();
+                let username = token(&data, 3);
+                let hispath = token(&data, 3);
+
+                if let (Ok(o) , Ok(p)) = (flag , op) {
+                    toml::configer(&o, &username, &hispath, &p).ugh();
+                }
+            }
             "end" => {
                 break;
             }
