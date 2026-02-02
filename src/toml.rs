@@ -1,4 +1,4 @@
-use std::{fs, io::Read, path::PathBuf};
+use std::{env::{self}, fs, io::Read, path::PathBuf};
 use colored::*;
 use serde::{Deserialize};
 use walkdir::{WalkDir};
@@ -20,27 +20,28 @@ pub struct Customization {
 }
 
 pub fn toml() -> Config {
-    let confi_file_path = connfig_file_finder().ughv();
-    let read_config = read_file_cont(&confi_file_path.to_str().extract()).ughv();
+    let config_file_path = connfig_file_finder().ughv();
+    let read_config = read_file_cont(&config_file_path.to_str().extract()).ughv();
     let toml_des : Config = toml::from_str(&read_config).unwrap();
     return toml_des
 }
 
 fn write_to_config(value:String) -> std::result::Result<() , HyperkitError> {
-    let confi_file_path = connfig_file_finder()?;
-    let okay = std::fs::write(confi_file_path, value).errh(None).ughf();
+    let config_file_path = connfig_file_finder()?;
+    let okay = std::fs::write(config_file_path, value).errh(None).ughf();
     okay
 }
 
 fn connfig_file_finder() -> std::result::Result<PathBuf , HyperkitError> {
-    for i in WalkDir::new("/home/mohammed").into_iter().map(|s| s.map_err(|s| s.into_io_error())) {
+    let home_dir = env::home_dir().extract();
+    for i in WalkDir::new(home_dir.join(".config")).into_iter().map(|s| s.map_err(|s| s.into_io_error())) {
         let i = i.errh(Some("toml.rs/38".to_string()))?;
 
         if i.file_name() ==  "Hyper.toml" {
             return Ok(i.path().to_path_buf()) ;       
         }
     }
-    Err(HyperkitError::from(HyperkitError::ShouldNotHappen))
+    Err(HyperkitError::from(HyperkitError::FileError(crate::backend::safe::FileError::FileNotFound(None))))
 }
 
 fn help_configer_seter(username:&str , hispath:&str) -> std::result::Result<() , HyperkitError> {
@@ -52,38 +53,38 @@ fn help_configer_seter(username:&str , hispath:&str) -> std::result::Result<() ,
     .errh(None).ughf()?.read_to_string(&mut done).errh(None).ughv();
 
     if !username.contains("/") {
-        let test = done.replace(&toml().customization.username, &username);
-        let okay =  write_to_config(test);
+        let rep = done.replace(&toml().customization.username, &username);
+        let okay =  write_to_config(rep);
         return Ok(okay?);
     } 
     else {
-        let test = done.replace(&toml().dependencies.historyfilepath, &hispath);
-        let okay = write_to_config(test);
+        let rep = done.replace(&toml().dependencies.historyfilepath, &hispath);
+        let okay = write_to_config(rep);
         return Ok(okay?);
     }
 }
 
-pub fn configer (flag:&str , username:&str , hispath:&str , opration:&str) -> std::result::Result<() , HyperkitError> {
+pub fn configer (flag:&str , username:&str , hispath:&str , operation:&str) -> std::result::Result<() , HyperkitError> {
     let tell = tell();
 
     match flag {
         "username" => {
-            match opration {
+            match operation {
                 "--set" => {
                     help_configer_seter(&username, &hispath)._success_res("Configer", "succeeded").ugh();
                 },
                 _ => {
-                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No opration was supplied".red().bold());
+                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No operation was supplied".red().bold());
                 }
             }
         },
         "hispath" => {
-            match opration {
+            match operation {
                 "--set" => {
                     help_configer_seter(&username, &hispath)._success_res("Configer", "succeeded").ugh();
                 }
                 _ => {
-                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No opration was supplied".red().bold());
+                    println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No operation was supplied".red().bold());
                 }
             }
         },

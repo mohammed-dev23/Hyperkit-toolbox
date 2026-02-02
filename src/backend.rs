@@ -24,7 +24,8 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
             println!("   *{} {} {} to list and lookup processes" , "enter".green() , "ps".bright_blue() , "<Flag[-SF: search for pros , -A: list all the pros]>".bright_purple());
             println!("   *{} {} {} to stop processes |{}|" ,  "enter".green() , "stop".bright_blue() , "<PID>".bright_purple() , "#Warning do not even attempt to enter latters only numbers is allowed otherwise it will stop itself!!".bright_red().bold());
             println!("   *{} {} {} {} to see and edit the hostname" , "enter".green() , "hostname".bright_blue() , "<Flags: --show/--set>".bright_purple() , "<--set: <NewHostName>>".bright_yellow());
-            println!("   *{} {} {} {} {} to config the config file" , "enter".green() , "Configer".bright_blue() , "<Flags:username/hispath>".bright_purple() , "<Opration:--set>".bright_yellow() , "<Value>".bright_cyan())
+            println!("   *{} {} {} {} {} to config the config file" , "enter".green() , "Configer".bright_blue() , "<Flags:username/hispath>".bright_purple() , "<operation:--set>".bright_yellow() , "<Value>".bright_cyan());
+            println!("   *{} {} {} {} to manage the history file" , "enter".green() , "history".bright_blue(), "<Flag:--clean(to clean the history)/--search(to find a keyword in the history file)>".bright_purple() , "<--search <Value>>".bright_yellow())
         }
         "--built-in-apps" => {
             println!("   *{} {} {} to use the built-in calculator" , "enter".green() , "calc".bright_blue() , "<Math>".purple());
@@ -285,6 +286,36 @@ use std::{env::{self, }, fs::{self,File}, io::*,  path::PathBuf  , process};
 
         Ok(())
     }
+
+    pub fn history(flag:&str, search:&str) -> std::result::Result<() , HyperkitError> {
+        let path = toml().dependencies.historyfilepath;
+        let path = path.as_str();
+        let tell = tell();
+
+        match flag {
+            "--search" => {
+                let mut readed = String::new();
+                let mut open = fs::File::open(path).errh(Some(path.to_string())).ughf()?;
+                open.read_to_string(&mut readed).errh(None).ughv();
+
+                let t:Vec<&str> = readed.lines().collect();
+
+                let mut num = 0;
+
+                for i in t {
+                    if i.contains(search) {
+                        println!("   [{}]: {}-{}", "Found at line".bright_purple().bold() ,num.to_string().bright_cyan().bold() ,i.bright_green().bold());
+                    }
+                    else {
+                        num += 1
+                    }
+                }
+            }
+            _ => println!("[{tell:?}]~>{}: due to [{}]" , "Error".red().bold() , "No flag was supplied".red().bold())
+        }
+
+        Ok(())
+    }
 }
 
 pub mod standard {
@@ -355,6 +386,7 @@ pub mod safe {
     use std::{num::{IntErrorKind, ParseIntError}};
     use colored::Colorize;
     use nix::errno::Errno;
+    use rustyline::error::ReadlineError;
     use zip::result::ZipError;
     use crate::{backend::{clean::{ExtractOptions, ExtractOptionsErr}, standard::tell}, repl::GITHUBLINK, toml::toml};
 
@@ -389,7 +421,7 @@ pub mod safe {
         ZeroOrEmputy(Option<String>),
         OverFlow(Option<String>),
         InvalidDigit(Option<String>),
-        ExtarctingErr(Option<String>),
+        ExtractingErr(Option<String>),
     }
 
     #[derive(Debug)]
@@ -437,7 +469,7 @@ pub mod safe {
                     ParsingErr::InvalidDigit(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Invalid digits".bright_red() , err_res.extract().bright_yellow().bold()),
                     ParsingErr::OverFlow(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Number is out of range".bright_red() , err_res.extract().bright_yellow().bold()),
                     ParsingErr::ZeroOrEmputy(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"Zero is not a valid value".bright_red() , err_res.extract().bright_yellow().bold()),
-                    ParsingErr::ExtarctingErr(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"extracting faild".bright_red() , err_res.extract().bright_yellow().bold()),
+                    ParsingErr::ExtractingErr(err_res) => write!(f, "{}: due to [{}: <{}>]" , "Error".bright_red().bold() ,"extracting faild".bright_red() , err_res.extract().bright_yellow().bold()),
                 }
 
                 HyperkitError::FileError(e) => match e {
@@ -672,7 +704,7 @@ pub mod safe {
             match self {
                 Ok(o) => return Ok(o),
                 Err(e) => {
-                    let hypere = match e.extarct(Some("backend/675".to_string()))?.kind() {
+                    let hypere = match e.extract(Some("backend/675".to_string()))?.kind() {
                         std::io::ErrorKind::NotFound => HyperkitError::FileError(FileError::FileNotFound(res)),
                         std::io::ErrorKind::FileTooLarge => HyperkitError::FileError(FileError::FileTooLarge(res)),
                         std::io::ErrorKind::NotADirectory => HyperkitError::FileError(FileError::NotADirectory(res)),
@@ -693,6 +725,57 @@ pub mod safe {
                         _ => HyperkitError::ShouldNotHappen
                     };
                     return Err(hypere);
+                }
+            }
+        }
+    }
+
+    impl<T> ErrH for std::result::Result<T , ReadlineError> {
+        type Out = std::result::Result<T, HyperkitError>;
+
+        fn errh(self , res:Option<String>) -> Self::Out where Self: Sized {
+            match self {
+                Ok(o) => Ok(o),
+                Err(e) => {
+                    let hypererr = match e {
+                        ReadlineError::Io(e) => match e.kind() {
+                            std::io::ErrorKind::NotFound => HyperkitError::FileError(FileError::FileNotFound(res)),
+                            std::io::ErrorKind::FileTooLarge => HyperkitError::FileError(FileError::FileTooLarge(res)),
+                            std::io::ErrorKind::NotADirectory => HyperkitError::FileError(FileError::NotADirectory(res)),
+                            std::io::ErrorKind::IsADirectory => HyperkitError::FileError(FileError::IsADirectory(res)),
+                            std::io::ErrorKind::InvalidFilename => HyperkitError::FileError(FileError::InvalidFilename(res)),
+                            std::io::ErrorKind::PermissionDenied => HyperkitError::FileError(FileError::PermissionDenied(res)),
+                            std::io::ErrorKind::ReadOnlyFilesystem => HyperkitError::FileError(FileError::ReadOnlyFile(res)),
+                            std::io::ErrorKind::Unsupported => HyperkitError::FileError(FileError::UnsupportedFileType(res)),
+
+                            std::io::ErrorKind::Interrupted => HyperkitError::InputReadingErr(InputReadingErr::Interrupted(res)),
+                            std::io::ErrorKind::InvalidData => HyperkitError::InputReadingErr(InputReadingErr::BadEncoding(res)),
+                            std::io::ErrorKind::BrokenPipe => HyperkitError::InputReadingErr(InputReadingErr::PipeBroken(res)),
+                            std::io::ErrorKind::UnexpectedEof => HyperkitError::InputReadingErr(InputReadingErr::StreamClosed(res)),
+                            std::io::ErrorKind::OutOfMemory => HyperkitError::InputReadingErr(InputReadingErr::OutOfMemory(res)),
+                            std::io::ErrorKind::Other => HyperkitError::InputReadingErr(InputReadingErr::Unknown(res)),
+                            std::io::ErrorKind::WouldBlock => HyperkitError::InputReadingErr(InputReadingErr::Blocked(res)),
+
+                            _ => HyperkitError::ShouldNotHappen
+                        }
+                        ReadlineError::Errno(e) => match e {
+                            Errno::EACCES => HyperkitError::SystemErr(SystemErr::Permissiondenied(res)),
+                            Errno::EINVAL => HyperkitError::SystemErr(SystemErr::Invalidargument(res)),
+                            Errno::EAGAIN => HyperkitError::SystemErr(SystemErr::ResourceTempUnavailable(res)),
+                            Errno::EPERM => HyperkitError::SystemErr(SystemErr::OperationNpermitted(res)),
+                            Errno::ENOMEM => HyperkitError::SystemErr(SystemErr::OutOfMemory(res)),
+                            Errno::EBUSY => HyperkitError::SystemErr(SystemErr::ResourceBusy(res)),
+                            Errno::EINTR => HyperkitError::SystemErr(SystemErr::InterruptedCall(res)),
+                            Errno::ENOSPC => HyperkitError::SystemErr(SystemErr::DiskFull(res)),
+                            Errno::EFAULT => HyperkitError::SystemErr(SystemErr::BadAddress(res)),
+                            Errno::ENAMETOOLONG => HyperkitError::SystemErr(SystemErr::NameTooLong(res)),
+                            Errno::UnknownErrno => HyperkitError::SystemErr(SystemErr::UnknownSysErr(res)),
+
+                            _ => HyperkitError::ShouldNotHappen
+                        }
+                        _ => HyperkitError::ShouldNotHappen
+                    };
+                    return Err(hypererr);
                 }
             }
         }
@@ -753,7 +836,7 @@ pub mod clean {
     pub trait ExtractOptionsErr {
         type Out;
 
-        fn extarct(self, res: Option<String>) -> Self::Out where Self: Sized; 
+        fn extract(self, res: Option<String>) -> Self::Out where Self: Sized; 
     }
 
     impl<T: Default + Clone> ExtractOptions for Option<T> {
@@ -773,12 +856,12 @@ pub mod clean {
     impl<E> ExtractOptionsErr for Option<E> {
         type Out = std::result::Result<E , HyperkitError>;
 
-        fn extarct(self, res:Option<String>) -> Self::Out where Self: Sized {
+        fn extract(self, res:Option<String>) -> Self::Out where Self: Sized {
             if let Some(o) = self {
                 Ok(o)
             }
             else {
-                return Err(HyperkitError::ParsingErr(super::safe::ParsingErr::ExtarctingErr(res)));
+                return Err(HyperkitError::ParsingErr(super::safe::ParsingErr::ExtractingErr(res)));
             }
         }
     }

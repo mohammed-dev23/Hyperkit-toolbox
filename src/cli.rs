@@ -35,7 +35,7 @@ pub mod cli {
         },
         #[command(about = "\x1b[33m\x1b[1m -use it to clone files on your system- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Clone {
-            #[arg(long = "target" , help = "the targted file you want to clone" , required = true , value_name = "File/Path")]
+            #[arg(long = "target" , help = "the targeted file you want to clone" , required = true , value_name = "File/Path")]
             target:String,
             #[arg(long = "output" , help = "the output name of the cloned file or the name of existed one" , default_value = "output"  , value_name = "New Name/existed file")]
             outputname:String
@@ -47,7 +47,7 @@ pub mod cli {
         },
         #[command(about = "\x1b[33m\x1b[1m -a calculator- \x1b[0m\x1b[0m")]
         Calc {
-            #[arg(long = "" , help = "put the math problome you want to solve" , required = true , value_name = "Math")]
+            #[arg(long = "" , help = "put the math problem you want to solve" , required = true , value_name = "Math")]
             math:String
         },
         #[command(about = "\x1b[33m\x1b[1m -use it to move files from place to another- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
@@ -59,9 +59,9 @@ pub mod cli {
         },
         #[command(about = "\x1b[33m\x1b[1m -used to make/extract tar archives- \x1b[33m\x1b[0m" , color = ColorChoice::Always)]
         Tar {
-            #[arg(short = 'f' , help = "the opration you want to run" , value_name = "load/Unload" , required = true)]
+            #[arg(short = 'f' , help = "the operation you want to run" , value_name = "load/Unload" , required = true)]
             flag:String,
-            #[arg(short = 's', help = "the name or the path of the file that you want to run the opration on" , required = true)]
+            #[arg(short = 's', help = "the name or the path of the file that you want to run the operation on" , required = true)]
             the_name:String,
             #[arg(short = 'o' , help = "the output name" , value_name = "Name" , default_value = "output")]
             output:String
@@ -70,7 +70,7 @@ pub mod cli {
         Transmute {
             #[arg(short = 't' , help = "the type of encoding/decodeing you want to use" , required = true , value_name = "Type")]
             ttype:String,
-            #[arg(short = 'f' , help = "the opration you want to run" , value_name = "enc/dec" , required = true)]
+            #[arg(short = 'f' , help = "the operation you want to run" , value_name = "enc/dec" , required = true)]
             flag:String,
             #[arg(short = 's' , help = "the file name or path that you want to encode or decode" , value_name = "File" , required = true)]
             fname:String,
@@ -86,7 +86,7 @@ pub mod cli {
         Time,
         #[command(about = "\x1b[33m\x1b[1m -use it to see the running process in your system and search for them- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Ps {
-            #[arg(short = 'f', help = "choose one of the two opration you can do <SF:to search for processes by there pid/A:to list all the running processes>" , value_name = "SF/A" , default_value = None)]
+            #[arg(short = 'f', help = "choose one of the two operation you can do <SF:to search for processes by there pid/A:to list all the running processes>" , value_name = "SF/A" , default_value = None)]
             flag:Option<String>,
             #[arg(long = "pid" ,help = "put the process pid you want to search for" , value_name = "pid" , default_value = None)]
             pid:Option<usize>
@@ -101,9 +101,9 @@ pub mod cli {
             #[arg(required = true , help = "the name of the app you want to run" , value_name = "Name")]
             name:String
         },
-        #[command(about = "\x1b[33m\x1b[1m -used to make/extarct zip archives- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
+        #[command(about = "\x1b[33m\x1b[1m -used to make/extract zip archives- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Zip {
-            #[arg(short = 'o' , required = true , help = "the opration you want to make <Zip-New: to make a new zip archive/Zip-All: to comparse any directory or files into archive/extract: to extract zip archives>" , value_name = "Zip-New/Zip-All/extract")]
+            #[arg(short = 'o' , required = true , help = "the operation you want to make <Zip-New: to make a new zip archive/Zip-All: to comparse any directory or files into archive/extract: to extract zip archives>" , value_name = "Zip-New/Zip-All/extract")]
             op:String,
 
             #[arg(long = "name" , value_name = "File/Name" , help = "the name of the new file you are making" , default_value = "" )]
@@ -117,7 +117,7 @@ pub mod cli {
             
             #[arg(short = 's' , value_name = "File/Path/Dir" , help = "the dir you want to run opraion on" , default_value = "") ]
             src_dir:String,
-            #[arg(short = 'r' , value_name = "Name" , help = "the name of the new file you after extracion or composriong" , default_value = "")]
+            #[arg(short = 'r' , value_name = "Name" , help = "the name of the new file you after extracion or compressing" , default_value = "")]
             res_dir:String
         },
         #[command(about = "\x1b[33m\x1b[1m -use it to list a directory in tree format- \x1b[0m\x1b[0m", color = ColorChoice::Always)]
@@ -136,11 +136,11 @@ pub mod cli {
         Configer {
             #[arg(help = "chose on of the two flags (username/hispath)" , required = true )]
             flag:String,
-            #[arg(help = "the opration you want to run (set)" , required = true)]
-            opration:String,
-            #[arg(help = "the username you want to make the opration on" , short = 'u' , required = false , group = "user" , default_value = "")]
+            #[arg(help = "the operation you want to run (set)" , required = true)]
+            operation:String,
+            #[arg(help = "the username you want to make the operation on" , short = 'u' , required = false , group = "user" , default_value = "")]
             username:String,
-            #[arg(help = "the history path you want to make the opration on" , short = 'p' , required = false , group = "path" , default_value = "")]
+            #[arg(help = "the history path you want to make the operation on" , short = 'p' , required = false , group = "path" , default_value = "")]
             hispath:String,
         }
     }
@@ -189,9 +189,9 @@ pub mod cli {
                 let t = format!("--{}" , flag);
                 hostname(&t,hostnamee ).ugh();
             } 
-            Some(Commandd::Configer { flag, opration, username, hispath }) => {
-                let opration = format!("--{}" , opration);
-                configer(&flag, &username, &hispath, &opration).ugh();
+            Some(Commandd::Configer { flag, operation, username, hispath }) => {
+                let operation = format!("--{}" , operation);
+                configer(&flag, &username, &hispath, &operation).ugh();
             },
             None => {}
         }

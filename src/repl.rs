@@ -1,6 +1,6 @@
 use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip};
-use crate::backend::commands::hostname;
-use crate::backend::safe::{ ErrH, HyperkitError, Ugh, Ughv};
+use crate::backend::commands::{history, hostname};
+use crate::backend::safe::{ ErrH, HyperkitError, Success, Ugh, Ughv};
 use crate::backend::{commands, standard::tell, parser::* };
 use crate::toml::{self, toml};
 use std::{env::* , borrow::Cow::{self, Owned}};
@@ -362,6 +362,22 @@ pub fn repl() -> std::result::Result<() , HyperkitError> {
 
                 if let (Ok(o) , Ok(p)) = (flag , op) {
                     toml::configer(&o, &username, &hispath, &p).ugh();
+                }
+            }
+            "history" => {
+                let flag = token(&data, 1).checker(Some("--clean".to_string())).ughf();
+                let search = token(&data, 2);
+
+                if let Ok(o) = flag {
+                    if o == "--clean" {
+                        def.clear_history().errh(Some("history".to_string()))._success_res("history", "Cleaned").ughv();
+                    }
+                    else {
+                        history(&o, &search).ugh();
+                    }
+                }
+                else {
+                    continue;
                 }
             }
             "end" => {

@@ -94,7 +94,7 @@ pub fn zip(flags:&str ,file_name:&str  , ziparg:ZipArg , zipdir:ZipDir) -> std::
 
     match flags.trim() {
         "--New-Zip" => {
-            let curr = env::current_dir().errh(Some("Couldn't extarct the path".to_string())).ughf()?;
+            let curr = env::current_dir().errh(Some("Couldn't extract the path".to_string())).ughf()?;
             let creat = std::fs::File::create(format!("{}/{}" , &curr.to_string_lossy().to_string() , &file_name)).errh(Some(curr.to_string_lossy().to_string())).ughf()?;
 
             let mut zip = zip::ZipWriter::new(creat);
@@ -227,7 +227,7 @@ pub fn cli_zip(op:&str ,files: FileZipArg , file_name:&str , src_dir:&str , res_
     let tell = tell();
     match op.trim() {
         "New-Zip" => {
-                let curr = env::current_dir().errh(Some("Couldn't extarct the path".to_string())).ughf()?;
+                let curr = env::current_dir().errh(Some("Couldn't extract the path".to_string())).ughf()?;
                 let creat = std::fs::File::create(format!("{}/{}" , &curr.to_string_lossy().to_string() , &file_name)).errh(Some(curr.to_string_lossy().to_string())).ughf()?;
 
                 let mut zip = zip::ZipWriter::new(creat);
