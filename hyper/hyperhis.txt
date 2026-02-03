@@ -5,3 +5,5 @@ end
 help --commands
 clean
 end
+clean
+end
