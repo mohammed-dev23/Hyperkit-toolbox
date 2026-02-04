@@ -1,9 +1,101 @@
 #V2
-clear
+clean
+yank mem
 clean
 end
-help --commands
+clean
+yank mem
 clean
 end
+clean
+yank os
+end
+yank os
+clean
+end
+clean
+yank os
+clean
+end
+clean
+yank os
+clean
+end
+clean
+yank os
+clean
+end
+clean
+yank os
+clean
+yank mem
+clean
+end
+yank battery
+end
+clean
+yank battery
+end
+clean
+yank battery
+clean
+end
+clean
+yank battery
+clean
+end
+clean
+yank battery
+clean
+end
+clean
+yank battery
+clean
+end
+clean
+yank battery
+clean
+end
+clean
+yank battery
+end
+clean
+yank battery
+clean
+yank mem
+yank os
+clean
+end
+clean
+yank os
+yank battery
+clean
+yank temp
+clean
+end
+clean
+yank temp
+clean
+end
+clean
+yank temp
+end
+yank temp
+enf
+end
+yank temp
+end
+yank temp
+clean
+end
+clean
+yank temp
+clean
+end
+yank temp
+clean
+end
+yank os
+yank dnals
 clean
 end

@@ -1307,7 +1307,7 @@ pub mod safe {
             match self {
                 Ok(o) => return Ok(o),
                 Err(e) => {
-                    let hypere = match e.extract(Some("backend/675".to_string()))?.kind() {
+                    let hypere = match e.extract_err(Some("backend/675".to_string()))?.kind() {
                         std::io::ErrorKind::NotFound => {
                             HyperkitError::FileError(FileError::FileNotFound(res))
                         }
@@ -1524,7 +1524,7 @@ pub mod clean {
     pub trait ExtractOptionsErr {
         type Out;
 
-        fn extract(self, res: Option<String>) -> Self::Out
+        fn extract_err(self, res: Option<String>) -> Self::Out
         where
             Self: Sized;
     }
@@ -1552,7 +1552,7 @@ pub mod clean {
     impl<E> ExtractOptionsErr for Option<E> {
         type Out = std::result::Result<E, HyperkitError>;
 
-        fn extract(self, res: Option<String>) -> Self::Out
+        fn extract_err(self, res: Option<String>) -> Self::Out
         where
             Self: Sized,
         {

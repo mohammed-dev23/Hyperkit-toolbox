@@ -1,4 +1,4 @@
-use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip};
+use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, yank, zip};
 use crate::backend::commands::{history, hostname};
 use crate::backend::safe::{ErrH, HyperkitError, Success, Ugh, Ughv};
 use crate::backend::{commands, parser::*, standard::tell};
@@ -416,6 +416,15 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
                     }
                 } else {
                     continue;
+                }
+            }
+            "yank" => {
+                let flag = token(&data, 1)
+                    .checker(Some("flag missing (mem)".to_string()))
+                    .ughf();
+
+                if let Ok(o) = flag {
+                    yank(&o).ugh();
                 }
             }
             "end" => {

@@ -1,4 +1,4 @@
-use crate::backend::clean::ExtractOptions;
+use crate::backend::clean::{ExtractOptions, ExtractOptionsErr};
 use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
 use chrono::*;
@@ -703,4 +703,437 @@ pub fn treee<P: AsRef<std::path::Path>>(
     }
     println!("{tree}");
     Ok(tree)
+}
+
+fn get_mem(i: &str) -> std::result::Result<i64, HyperkitError> {
+    let mem: Vec<&str> = i.split(':').collect();
+    let get_mem = mem
+        .get(1)
+        .extract_err(None)
+        .ughf()?
+        .replace("kB", "")
+        .trim()
+        .parse::<i64>()
+        .errh(None)
+        .ughv();
+
+    Ok(get_mem)
+}
+
+fn get_os(o: &str) -> std::result::Result<&str, HyperkitError> {
+    let os: Vec<&str> = o.split('=').collect();
+    let get_os = os
+        .get(1)
+        .extract_err(Some("get_os".to_string()))
+        .ughf()?
+        .trim_matches('"');
+
+    Ok(get_os)
+}
+
+fn open_file_bat(path: &str) -> std::result::Result<std::fs::File, HyperkitError> {
+    let open = fs::File::open(path).errh(Some(path.to_string())).ughf()?;
+    Ok(open)
+}
+
+pub fn yank(flag: &str) -> std::result::Result<(), HyperkitError> {
+    pub const KB_GB: i64 = 1_048_576;
+    let tell = tell();
+
+    match flag {
+        "mem" => {
+            let mut open = fs::File::open("/proc/meminfo").errh(None).ughf()?;
+            let mut read = String::new();
+            open.read_to_string(&mut read).errh(None).ughv();
+
+            let mem: Vec<&str> = read.lines().collect();
+
+            let memtotal = if let Some(o) = mem.iter().find(|s| s.starts_with("MemTotal")) {
+                let get_mem_total = get_mem(*o)?;
+                get_mem_total / KB_GB
+            } else {
+                0
+            };
+
+            let memfree = if let Some(o) = mem.iter().find(|s| s.starts_with("MemFree")) {
+                let get_mem_free = get_mem(*o)?;
+                get_mem_free / KB_GB
+            } else {
+                0
+            };
+
+            let memavailable = if let Some(o) = mem.iter().find(|s| s.starts_with("MemAvailable")) {
+                let get_mem_available = get_mem(*o)?;
+                get_mem_available / KB_GB
+            } else {
+                0
+            };
+
+            let cached_mem = if let Some(o) = mem.iter().find(|s| s.starts_with("Cached")) {
+                let get_mem_chched = get_mem(*o)?;
+                get_mem_chched / KB_GB
+            } else {
+                0
+            };
+
+            let active_mem = if let Some(o) = mem.iter().find(|s| s.starts_with("Active")) {
+                let get_active_mem = get_mem(*o)?;
+                get_active_mem / KB_GB
+            } else {
+                0
+            };
+
+            let inactive_mem = if let Some(o) = mem.iter().find(|s| s.starts_with("Inactive")) {
+                let get_inactive_mem = get_mem(*o)?;
+                get_inactive_mem / KB_GB
+            } else {
+                0
+            };
+
+            let swaptotal_mem = if let Some(o) = mem.iter().find(|s| s.starts_with("SwapTotal")) {
+                let get_swaptotal_mem = get_mem(*o)?;
+                get_swaptotal_mem / KB_GB
+            } else {
+                0
+            };
+
+            let swapfree_mem = if let Some(o) = mem.iter().find(|s| s.starts_with("SwapFree")) {
+                let get_swapfree_mem = get_mem(*o)?;
+                get_swapfree_mem / KB_GB
+            } else {
+                0
+            };
+
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Total Memory".bright_cyan().bold(),
+                memtotal.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Free Memory".bright_cyan().bold(),
+                memfree.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Available Memory".bright_cyan().bold(),
+                memavailable.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Cash Memory".bright_cyan().bold(),
+                cached_mem.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Used Memory".bright_cyan().bold(),
+                active_mem.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Unused Memory".bright_cyan().bold(),
+                inactive_mem.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Swap Total Memory".bright_cyan().bold(),
+                swaptotal_mem.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Swap Free Memory".bright_cyan().bold(),
+                swapfree_mem.to_string().bright_yellow().bold(),
+                "GB".bright_yellow().bold()
+            );
+        }
+        "os" => {
+            let mut os = String::new();
+            let mut open = fs::File::open("/etc/os-release")
+                .errh(Some("os-release".to_string()))
+                .ughf()?;
+            open.read_to_string(&mut os).errh(None).ughv();
+
+            let os: Vec<&str> = os.lines().collect();
+
+            let os_name = if let Some(o) = os.iter().find(|s| s.starts_with("NAME")) {
+                let os_name = get_os(*o)?;
+                os_name
+            } else {
+                "NONE"
+            };
+
+            let os_version = if let Some(o) = os.iter().find(|s| s.starts_with("VERSION")) {
+                let os_version = get_os(*o)?;
+                os_version
+            } else {
+                "NONE"
+            };
+
+            let os_release_type = if let Some(o) = os.iter().find(|s| s.starts_with("RELEASE_TYPE"))
+            {
+                let os_release_type = get_os(*o)?;
+                os_release_type
+            } else {
+                "NONE"
+            };
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Software Name".bright_cyan().bold(),
+                os_name.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Software Version".bright_cyan().bold(),
+                os_version.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Software Release Type".bright_cyan().bold(),
+                os_release_type.to_string().bright_yellow().bold()
+            );
+        }
+        "battery" => {
+            let mut bat = String::new();
+
+            let mut f1 = open_file_bat("/sys/class/power_supply/BAT0/health").ughf()?;
+            let mut f2 = open_file_bat("/sys/class/power_supply/BAT0/capacity").ughf()?;
+            let mut f3 = open_file_bat("/sys/class/power_supply/BAT0/model_name").ughf()?;
+            let mut f4 = open_file_bat("/sys/class/power_supply/BAT0/status").ughf()?;
+            let mut f5 = open_file_bat("/sys/class/power_supply/BAT0/hwmon1/name").ughf()?;
+
+            f1.read_to_string(&mut bat).errh(None).ughv();
+            f2.read_to_string(&mut bat).errh(None).ughv();
+            f3.read_to_string(&mut bat).errh(None).ughv();
+            f4.read_to_string(&mut bat).errh(None).ughv();
+            f5.read_to_string(&mut bat).errh(None).ughv();
+
+            let bat: Vec<&str> = bat.lines().collect();
+
+            let bat_health = if let Some(o) = bat.get(0) { o } else { "NONE" };
+
+            let bat_capacity = if let Some(o) = bat.get(1) { o } else { "NONE" };
+
+            let bat_model_name = if let Some(o) = bat.get(2) { o } else { "NONE" };
+
+            let bat_status = if let Some(o) = bat.get(3) { o } else { "NONE" };
+
+            let bat_name = if let Some(o) = bat.get(4) { o } else { "NONE" };
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Battery Health".bright_cyan().bold(),
+                bat_health.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Battery capacity".bright_cyan().bold(),
+                bat_capacity.to_string().bright_yellow().bold(),
+                "%".bright_green().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Battery Model Name".bright_cyan().bold(),
+                bat_model_name.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Battery State".bright_cyan().bold(),
+                bat_status.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Battery Name".bright_cyan().bold(),
+                bat_name.to_string().bright_yellow().bold()
+            );
+        }
+        "temp" => {
+            let mut cpu_temp = String::new();
+
+            let mut core_package_id_0_temp =
+                open_file_bat("/sys/class/hwmon/hwmon5/temp1_input").ughf()?;
+            let mut core1_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp2_input").ughf()?;
+            let mut core2_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp6_input").ughf()?;
+            let mut core3_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp10_input").ughf()?;
+            let mut core4_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp11_input").ughf()?;
+            let mut core5_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp12_input").ughf()?;
+            let mut core6_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp13_input").ughf()?;
+            let mut core7_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp14_input").ughf()?;
+            let mut core8_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp15_input").ughf()?;
+            let mut core9_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp16_input").ughf()?;
+            let mut core10_temp = open_file_bat("/sys/class/hwmon/hwmon5/temp17_input").ughf()?;
+
+            core_package_id_0_temp
+                .read_to_string(&mut cpu_temp)
+                .errh(None)
+                .ughv();
+            core1_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core2_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core3_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core4_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core5_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core6_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core7_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core8_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core9_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+            core10_temp.read_to_string(&mut cpu_temp).errh(None).ughv();
+
+            let cpu_temp: Vec<&str> = cpu_temp.lines().collect();
+
+            let all = if let Some(o) = cpu_temp.get(0) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core1 = if let Some(o) = cpu_temp.get(1) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core2 = if let Some(o) = cpu_temp.get(2) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core3 = if let Some(o) = cpu_temp.get(3) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core4 = if let Some(o) = cpu_temp.get(4) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core5 = if let Some(o) = cpu_temp.get(5) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core6 = if let Some(o) = cpu_temp.get(6) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core7 = if let Some(o) = cpu_temp.get(7) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core8 = if let Some(o) = cpu_temp.get(8) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core9 = if let Some(o) = cpu_temp.get(9) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            let core10 = if let Some(o) = cpu_temp.get(10) {
+                o.parse::<i64>().errh(None).ughv() / 1000
+            } else {
+                0
+            };
+
+            println!("          {}", "---CPU---".bright_cyan().bold());
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Overall Cpu Temp".bright_cyan().bold(),
+                all.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core1 Temp".bright_cyan().bold(),
+                core1.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core2 Temp".bright_cyan().bold(),
+                core2.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core3 Temp".bright_cyan().bold(),
+                core3.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core4 Temp".bright_cyan().bold(),
+                core4.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core5 Temp".bright_cyan().bold(),
+                core5.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core6 Temp".bright_cyan().bold(),
+                core6.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core7 Temp".bright_cyan().bold(),
+                core7.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core8 Temp".bright_cyan().bold(),
+                core8.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core9 Temp".bright_cyan().bold(),
+                core9.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Core10 Temp".bright_cyan().bold(),
+                core10.to_string().bright_yellow().bold(),
+                "C".bright_yellow().bold()
+            );
+        }
+        _ => {
+            println!(
+                "[{tell:?}]~>{}: due to [{}]",
+                "Error".red().bold(),
+                "No flag was supplied".red().bold()
+            );
+        }
+    }
+    Ok(())
 }
