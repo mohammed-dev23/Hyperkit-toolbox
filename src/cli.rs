@@ -1,6 +1,11 @@
 pub mod cli {
     use crate::{
-        all_apps::apps::{self, FileZipArg},
+        all_tools::system_tools,
+        all_tools::{
+            cryptography_tools,
+            files_tools::{FileZipArg, cli_zip, tar},
+            science_tools,
+        },
         backend::{
             clean::ExtractOptions,
             commands::{self, hostname, rn},
@@ -184,8 +189,6 @@ pub mod cli {
             )]
             name: String,
         },
-        #[command(about = "\x1b[33m\x1b[1m -use it to see the time- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
-        Time,
         #[command(about = "\x1b[33m\x1b[1m -use it to see the running process in your system and search for them- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
         Ps {
             #[arg(short = 'f', help = "choose one of the two operation you can do <SF:to search for processes by there pid/A:to list all the running processes>" , value_name = "SF/A" , default_value = None)]
@@ -323,7 +326,7 @@ pub mod cli {
             Some(Commandd::Rn { from, to }) => rn(from, to)?,
             Some(Commandd::Clone { target, outputname }) => commands::clone(target, outputname)?,
             Some(Commandd::Forge { name }) => commands::forge(name)?,
-            Some(Commandd::Calc { math }) => apps::calc(math),
+            Some(Commandd::Calc { math }) => science_tools::calc(math),
             Some(Commandd::Mv { from, to }) => commands::mv(from, to)?,
             Some(Commandd::Tar {
                 flag,
@@ -331,7 +334,7 @@ pub mod cli {
                 output,
             }) => {
                 let t = format!("--{}", flag);
-                apps::tar(t.as_str(), the_name, output)?;
+                tar(t.as_str(), the_name, output)?;
             }
             Some(Commandd::Transmute {
                 ttype,
@@ -340,10 +343,9 @@ pub mod cli {
                 outname,
             }) => {
                 let t = format!("--{}", flag);
-                apps::transmute(ttype, &t.as_str(), fname, outname)?;
+                cryptography_tools::transmute(ttype, &t.as_str(), fname, outname)?;
             }
             Some(Commandd::Mk { name }) => commands::mk(name)?,
-            Some(Commandd::Time) => apps::time(),
             Some(Commandd::Ps { flag, pid }) => {
                 let flag = format!("-{}", flag.extract());
                 commands::ps(flag.as_str(), pid.extract())?;
@@ -367,7 +369,7 @@ pub mod cli {
                 };
                 let src_dir = src_dir;
                 let res_dir = res_dir;
-                apps::cli_zip(
+                cli_zip(
                     op.as_str(),
                     files,
                     file_name.as_str(),
@@ -375,7 +377,7 @@ pub mod cli {
                     res_dir.as_str(),
                 )?;
             }
-            Some(Commandd::Tree { path }) => apps::treee(path).ugh(),
+            Some(Commandd::Tree { path }) => system_tools::treee(path).ugh(),
             Some(Commandd::Hostname { flag, hostnamee }) => {
                 let t = format!("--{}", flag);
                 hostname(&t, hostnamee).ugh();

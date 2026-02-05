@@ -1,50 +1,18 @@
 use crate::backend::clean::ExtractOptions;
 use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
-use chrono::*;
 use colored::*;
 use core::str;
-use evalexpr::*;
+
 use std::io::{self, Read, Write};
 use std::{env, fs, path};
 use tar::Archive;
-use termtree::Tree;
+
 use walkdir::WalkDir;
 use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::backend::{
-    clean::read_file_cont,
-    safe::{ErrH, HyperkitError, Success},
-};
-use crate::toml::toml;
-use base64::{
-    prelude::{BASE64_STANDARD, BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE},
-    *,
-};
-
-pub fn calc(math: &String) {
-    let path = tell();
-    let username = toml().customization.username;
-
-    let e = match eval(&math) {
-        Ok(t) => t,
-
-        Err(error) => {
-            println!("[{path:?}]>{}: due to {error:?}", "Error".red());
-            return;
-        }
-    };
-
-    println!("[{path:?}]~[{username}]>[ \x1b[34m{e}\x1b[0m ]");
-}
-
-pub fn time() {
-    let path = tell();
-    let username = toml().customization.username;
-    let time = Local::now();
-    println!("[{path:?}][{username}]~>[{time}]");
-}
+use crate::backend::safe::{ErrH, HyperkitError, Success};
 
 pub fn tar(
     flag: &str,
@@ -522,185 +490,4 @@ pub fn cli_zip(
         _ => todo!(),
     }
     Ok(())
-}
-
-pub fn transmute(
-    ttype: &str,
-    flag: &str,
-    the_name_of_the_file: &str,
-    output_name: &str,
-) -> std::result::Result<(), HyperkitError> {
-    let path = tell();
-    let readed = read_file_cont(the_name_of_the_file)?;
-    match ttype.trim() {
-        "base64-ST" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = BASE64_STANDARD.encode(&readed);
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = BASE64_STANDARD.decode(&readed.trim()).unwrap_or_default();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?;
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        "base64-PD" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = BASE64_STANDARD_NO_PAD.encode(&readed);
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = BASE64_STANDARD_NO_PAD.decode(&readed).unwrap_or_default();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        "base64-URL" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = BASE64_URL_SAFE.encode(&readed);
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = BASE64_URL_SAFE.decode(&readed).unwrap_or_default();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?;
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        "hex" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = hex::encode(&readed);
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = hex::decode(&readed).unwrap_or_default();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?;
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        "HEX" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = hex::encode_upper(&readed);
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = hex::decode(&readed).unwrap_or_default();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?;
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        "url" => {
-            match flag.trim() {
-                "--enc" => {
-                    let enc = urlencoding::encode(&readed).into_owned();
-
-                    fs::write(&output_name, enc).errh(Some("couldn`t write the encoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "encoded successfully").ughf()?;
-                }
-                "--dec" => {
-                    let dec = urlencoding::decode(&readed)
-                        .unwrap_or_default()
-                        .into_owned();
-
-                    fs::write(&output_name, dec).errh(Some("couldn`t write the decoded codic to the file Consider trying another type".to_string()))._success_res("transmute" , "decoded successfully").ughf()?;
-                }
-                _ => {
-                    println!(
-                        "[{path:?}]~>{}: due to [{}]",
-                        "Error".red().bold(),
-                        "No Flag was supplied".red().bold()
-                    );
-                }
-            }
-        }
-        _ => {
-            println!(
-                "[{path:?}]~>{}: due to [{}]",
-                "Error".red().bold(),
-                "No type was supplied".red().bold()
-            );
-        }
-    }
-    Ok(())
-}
-
-fn help_tree<P: AsRef<std::path::Path>>(path: P) -> String {
-    let p = path
-        .as_ref()
-        .file_name()
-        .extract()
-        .to_str()
-        .extract()
-        .bright_green()
-        .bold()
-        .to_string();
-    p
-}
-
-pub fn treee<P: AsRef<std::path::Path>>(
-    path: P,
-) -> std::result::Result<Tree<String>, HyperkitError> {
-    let read_dir = fs::read_dir(&path).errh(Some(path.as_ref().to_string_lossy().to_string()))?;
-    let mut tree = Tree::new(help_tree(path.as_ref().canonicalize().errh(None)?));
-
-    for i in read_dir {
-        let i = i.errh(None)?;
-        let dir = i.metadata().errh(None)?;
-
-        if dir.is_dir() {
-            tree.push(treee(i.path())?);
-        } else {
-            tree.push(Tree::new(help_tree(i.path())));
-        }
-    }
-    println!("{tree}");
-    Ok(tree)
 }

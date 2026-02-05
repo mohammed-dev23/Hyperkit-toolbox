@@ -1,6 +1,8 @@
-use crate::all_apps::{
-    apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip},
-    apps2::yank,
+use crate::all_tools::{
+    cryptography_tools::transmute,
+    files_tools::{ZipArg, ZipDir, tar, zip},
+    science_tools::calc,
+    system_tools::{treee, yank},
 };
 use crate::backend::commands::{history, hostname};
 use crate::backend::safe::{ErrH, HyperkitError, Success, Ugh, Ughv};
@@ -258,9 +260,6 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
                     continue;
                 }
             }
-            "time" => {
-                time();
-            }
             "mv" => {
                 let tok1 = token(&data, 1)
                     .checker(Some("path or name".to_string()))
@@ -378,10 +377,10 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
             "tree" => {
                 let path = token(&data, 1).checker(None);
                 if let Ok(o) = path {
-                    apps::treee(o).ugh();
+                    treee(o).ugh();
                 } else {
                     let path = String::from(".");
-                    apps::treee(path).ugh();
+                    treee(path).ugh();
                 }
             }
             "hostname" => {

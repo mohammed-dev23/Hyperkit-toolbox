@@ -1,10 +1,44 @@
-use crate::backend::clean::ExtractOptionsErr;
+use crate::backend::clean::{ExtractOptions, ExtractOptionsErr};
 use crate::backend::safe::{ErrH, HyperkitError, Ugh, Ughv};
 use crate::backend::standard::tell;
 use colored::*;
 use core::str;
 use std::fs;
 use std::io::Read;
+use termtree::Tree;
+
+fn help_tree<P: AsRef<std::path::Path>>(path: P) -> String {
+    let p = path
+        .as_ref()
+        .file_name()
+        .extract()
+        .to_str()
+        .extract()
+        .bright_green()
+        .bold()
+        .to_string();
+    p
+}
+
+pub fn treee<P: AsRef<std::path::Path>>(
+    path: P,
+) -> std::result::Result<Tree<String>, HyperkitError> {
+    let read_dir = fs::read_dir(&path).errh(Some(path.as_ref().to_string_lossy().to_string()))?;
+    let mut tree = Tree::new(help_tree(path.as_ref().canonicalize().errh(None)?));
+
+    for i in read_dir {
+        let i = i.errh(None)?;
+        let dir = i.metadata().errh(None)?;
+
+        if dir.is_dir() {
+            tree.push(treee(i.path())?);
+        } else {
+            tree.push(Tree::new(help_tree(i.path())));
+        }
+    }
+    println!("{tree}");
+    Ok(tree)
+}
 
 fn get_mem(i: &str) -> std::result::Result<i64, HyperkitError> {
     let mem: Vec<&str> = i.split(':').collect();

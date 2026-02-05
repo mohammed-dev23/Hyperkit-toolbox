@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 evalexpr = "13.1.0"
-chrono = "0.4.42"
 colored = "3.0.0"
 rustyline = {version = "17.0.2" , features = ["with-file-history" , "derive"]}
 tar = "0.4.44"

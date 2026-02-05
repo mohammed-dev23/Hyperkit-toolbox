@@ -1,6 +1,8 @@
-mod all_apps {
-    pub mod apps;
-    pub mod apps2;
+mod all_tools {
+    pub mod cryptography_tools;
+    pub mod files_tools;
+    pub mod science_tools;
+    pub mod system_tools;
 }
 mod backend;
 mod cli;
