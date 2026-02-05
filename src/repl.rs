@@ -1,4 +1,7 @@
-use crate::apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, yank, zip};
+use crate::all_apps::{
+    apps::{self, ZipArg, ZipDir, calc, tar, time, transmute, zip},
+    apps2::yank,
+};
 use crate::backend::commands::{history, hostname};
 use crate::backend::safe::{ErrH, HyperkitError, Success, Ugh, Ughv};
 use crate::backend::{commands, parser::*, standard::tell};

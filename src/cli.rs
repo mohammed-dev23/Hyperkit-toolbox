@@ -1,6 +1,6 @@
 pub mod cli {
     use crate::{
-        apps::{self, FileZipArg},
+        all_apps::apps::{self, FileZipArg},
         backend::{
             clean::ExtractOptions,
             commands::{self, hostname, rn},

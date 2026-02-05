@@ -1,4 +1,7 @@
-mod apps;
+mod all_apps {
+    pub mod apps;
+    pub mod apps2;
+}
 mod backend;
 mod cli;
 mod repl;

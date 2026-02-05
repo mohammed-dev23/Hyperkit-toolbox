@@ -1,79 +1,4 @@
 #V2
-clean
-yank mem
-clean
-end
-clean
-yank mem
-clean
-end
-clean
-yank os
-end
-yank os
-clean
-end
-clean
-yank os
-clean
-end
-clean
-yank os
-clean
-end
-clean
-yank os
-clean
-end
-clean
-yank os
-clean
-yank mem
-clean
-end
-yank battery
-end
-clean
-yank battery
-end
-clean
-yank battery
-clean
-end
-clean
-yank battery
-clean
-end
-clean
-yank battery
-clean
-end
-clean
-yank battery
-clean
-end
-clean
-yank battery
-clean
-end
-clean
-yank battery
-end
-clean
-yank battery
-clean
-yank mem
-yank os
-clean
-end
-clean
-yank os
-yank battery
-clean
-yank temp
-clean
-end
-clean
 yank temp
 clean
 end
@@ -97,5 +22,80 @@ clean
 end
 yank os
 yank dnals
+clean
+end
+clean
+end
+clean
+see
+clean
+yank dnals
+yank mem
+clean
+yank temp
+clean
+yank os
+clean
+end
+clean
+./
+clean
+yank battery
+clear
+clean
+end
+clean
+yank temp --watch
+end
+clean
+yank temp 
+cl
+clean
+end
+clean
+end
+clean
+see
+clean
+yank temp 
+clean
+end
+clean
+yank temp 
+clean
+end
+clean
+yank temp 
+end
+clean
+temp
+yank temp 
+end
+yank temp 
+clean
+end
+clean
+end
+clean
+yank temp 
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalt
+clean
+yank temp 
+end
+clean
+yank temp 
+end
+clean
+yank bios
+clean
+end
+clean
+yank bios
+clean
+yank mem
+see
+clean
+yank mem
+yank temp
 clean
 end
