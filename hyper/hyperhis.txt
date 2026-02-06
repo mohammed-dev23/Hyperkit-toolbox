@@ -1,91 +1,4 @@
 #V2
-end
-yank os
-yank dnals
-clean
-end
-clean
-end
-clean
-see
-clean
-yank dnals
-yank mem
-clean
-yank temp
-clean
-yank os
-clean
-end
-clean
-./
-clean
-yank battery
-clear
-clean
-end
-clean
-yank temp --watch
-end
-clean
-yank temp 
-cl
-clean
-end
-clean
-end
-clean
-see
-clean
-yank temp 
-clean
-end
-clean
-yank temp 
-clean
-end
-clean
-yank temp 
-end
-clean
-temp
-yank temp 
-end
-yank temp 
-clean
-end
-clean
-end
-clean
-yank temp 
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalt
-clean
-yank temp 
-end
-clean
-yank temp 
-end
-clean
-yank bios
-clean
-end
-clean
-yank bios
-clean
-yank mem
-see
-clean
-yank mem
-yank temp
-clean
-end
-clean
-see
-clean
-tree
-clean
-see
-go .bash_history
 go .config/
 see
 tree htop/
@@ -98,4 +11,91 @@ clean
 end
 time
 clean
+end
+clean
+see
+clean
+yank temp\\
+yank temp
+clean
+yank os
+clean
+yank bios
+clean
+end
+clean
+yank disk
+end
+yank disk
+clean\\
+clean
+end
+clean
+yank mem
+yank disk
+end
+clean
+yank disk
+end
+yank disk
+end
+yank disk
+clean
+yank temp
+clean
+end
+clean
+yank disk
+end
+yank disk
+end
+clean
+yank disk
+end
+clean
+yank disk
+end
+yank disk
+end
+clean
+yank disk
+clean
+yank disk
+see
+clean
+end
+clean
+yank disk
+emd
+clear
+clean
+end
+yank disk
+clean
+end
+clean
+./
+clean
+yank disk
+clean
+end
+clean
+end
+clean
+hash sha224
+clean
+see
+clean
+end
+clean
+hash sha224
+clean
+end
+clean
+hash sha224
+clean
+ed
+end
+clean
+hash sha224
 end

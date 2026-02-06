@@ -131,11 +131,6 @@ pub mod commands {
                     "<Math>".purple()
                 );
                 println!(
-                    "   *{} {} to know the time",
-                    "enter".green(),
-                    "time".bright_blue()
-                );
-                println!(
                     "   *{} {} {} {} {} to make/extract tar files",
                     "enter".green(),
                     "tar".bright_blue(),

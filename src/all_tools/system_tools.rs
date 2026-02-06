@@ -1,4 +1,4 @@
-use crate::backend::clean::{ExtractOptions, ExtractOptionsErr};
+use crate::backend::clean::{ExtractOptions, ExtractOptionsErr, read_file_cont};
 use crate::backend::safe::{ErrH, HyperkitError, Ugh, Ughv};
 use crate::backend::standard::tell;
 use colored::*;
@@ -55,7 +55,7 @@ fn get_mem(i: &str) -> std::result::Result<i64, HyperkitError> {
     Ok(get_mem)
 }
 
-fn get_os(o: &str) -> std::result::Result<&str, HyperkitError> {
+fn get_(o: &str) -> std::result::Result<&str, HyperkitError> {
     let os: Vec<&str> = o.split('=').collect();
     let get_os = os
         .get(1)
@@ -198,14 +198,14 @@ pub fn yank(flag: &str) -> std::result::Result<(), HyperkitError> {
             let os: Vec<&str> = os.lines().collect();
 
             let os_name = if let Some(o) = os.iter().find(|s| s.starts_with("NAME")) {
-                let os_name = get_os(*o)?;
+                let os_name = get_(*o)?;
                 os_name
             } else {
                 "NONE"
             };
 
             let os_version = if let Some(o) = os.iter().find(|s| s.starts_with("VERSION")) {
-                let os_version = get_os(*o)?;
+                let os_version = get_(*o)?;
                 os_version
             } else {
                 "NONE"
@@ -213,7 +213,7 @@ pub fn yank(flag: &str) -> std::result::Result<(), HyperkitError> {
 
             let os_release_type = if let Some(o) = os.iter().find(|s| s.starts_with("RELEASE_TYPE"))
             {
-                let os_release_type = get_os(*o)?;
+                let os_release_type = get_(*o)?;
                 os_release_type
             } else {
                 "NONE"
@@ -653,6 +653,180 @@ pub fn yank(flag: &str) -> std::result::Result<(), HyperkitError> {
                 "   -[{}] = ~{}~ ",
                 "Product Family".bright_cyan().bold(),
                 product_family.to_string().bright_yellow().bold()
+            );
+        }
+        "disk" => {
+            let mut part1 = String::new();
+            let mut uevent = open_file_bat("/sys/class/block/nvme0n1/nvme0n1p1/uevent")?;
+            uevent.read_to_string(&mut part1).errh(None).ughv();
+            let size = read_file_cont("/sys/class/block/nvme0n1/nvme0n1p1/size")
+                .ughv()
+                .trim()
+                .parse::<i64>()
+                .errh(None)
+                .ughv()
+                * 512
+                / 1024
+                / 1024;
+            let part1: Vec<&str> = part1.lines().collect();
+
+            let partname = if let Some(o) = part1.iter().find(|s| s.starts_with("PARTNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let devname = if let Some(o) = part1.iter().find(|s| s.starts_with("DEVNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let partnum = if let Some(o) = part1.iter().find(|s| s.starts_with("PARTN=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let mut part2 = String::new();
+            let mut uevent = open_file_bat("/sys/class/block/nvme0n1/nvme0n1p2/uevent")?;
+            uevent.read_to_string(&mut part2).errh(None).ughv();
+            let size2 = read_file_cont("/sys/class/block/nvme0n1/nvme0n1p2/size")
+                .ughv()
+                .trim()
+                .parse::<i64>()
+                .errh(None)
+                .ughv()
+                * 512
+                / 1024
+                / 1024
+                / 1024;
+            let part2: Vec<&str> = part2.lines().collect();
+
+            let partname2 = if let Some(o) = part2.iter().find(|s| s.starts_with("PARTNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let devname2 = if let Some(o) = part2.iter().find(|s| s.starts_with("DEVNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let partnum2 = if let Some(o) = part2.iter().find(|s| s.starts_with("PARTN=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let mut part3 = String::new();
+            let mut uevent = open_file_bat("/sys/class/block/nvme0n1/nvme0n1p3/uevent")?;
+            uevent.read_to_string(&mut part3).errh(None).ughv();
+            let size3 = read_file_cont("/sys/class/block/nvme0n1/nvme0n1p3/size")
+                .ughv()
+                .trim()
+                .parse::<i64>()
+                .errh(None)
+                .ughv()
+                * 512
+                / 1024
+                / 1024
+                / 1024;
+            let part3: Vec<&str> = part3.lines().collect();
+
+            let partname3 = if let Some(o) = part3.iter().find(|s| s.starts_with("PARTNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let devname3 = if let Some(o) = part3.iter().find(|s| s.starts_with("DEVNAME=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            let partnum3 = if let Some(o) = part3.iter().find(|s| s.starts_with("PARTN=")) {
+                get_(o).ughv()
+            } else {
+                "NONE"
+            };
+
+            println!(
+                "        {}~[{}]",
+                "Partition".bright_cyan().bold(),
+                partnum.bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition Name".bright_cyan().bold(),
+                partname.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition At".bright_cyan().bold(),
+                devname.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Partition Size".bright_cyan().bold(),
+                size.to_string().bright_yellow().bold(),
+                "Mib".bright_yellow().bold()
+            );
+
+            println!(
+                "        {}~[{}]",
+                "Partition".bright_cyan().bold(),
+                partnum2.bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition Name".bright_cyan().bold(),
+                partname2.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition At".bright_cyan().bold(),
+                devname2.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Partition Size".bright_cyan().bold(),
+                size2.to_string().bright_yellow().bold(),
+                "GiB".bright_yellow().bold()
+            );
+
+            println!(
+                "        {}~[{}]",
+                "Partition".bright_cyan().bold(),
+                partnum3.bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition Name".bright_cyan().bold(),
+                partname3.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}~ ",
+                "Partition At".bright_cyan().bold(),
+                devname3.to_string().bright_yellow().bold()
+            );
+
+            println!(
+                "   -[{}] = ~{}{}~ ",
+                "Partition Size".bright_cyan().bold(),
+                size3.to_string().bright_yellow().bold(),
+                "GiB".bright_yellow().bold()
             );
         }
         _ => {
