@@ -1,10 +1,10 @@
 pub mod cli {
     use crate::{
-        all_tools::system_tools,
         all_tools::{
             cryptography_tools,
-            files_tools::{FileZipArg, cli_zip, tar},
+            files_tools::{FileZipArg, cli_zip, indicate, tar},
             science_tools,
+            system_tools::{self, yank},
         },
         backend::{
             clean::ExtractOptions,
@@ -314,6 +314,25 @@ pub mod cli {
             )]
             hispath: String,
         },
+        #[command(about = "\x1b[33m\x1b[1m -use it to get informations about your system- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
+        Yank {
+            #[arg(
+                help = "the information type you want to get",
+                required = true,
+                value_name = "mem / temp / cpu / bios / os / battery / disk"
+            )]
+            flag: String,
+        },
+        #[command(about = "\x1b[33m\x1b[1m -use it to get informations a file in your system- \x1b[0m\x1b[0m" , color = ColorChoice::Always)]
+        Indicate {
+            #[arg(
+                short = 's',
+                help = "the file path you what to get it's info",
+                required = true,
+                value_name = "Path"
+            )]
+            file: String,
+        },
     }
 
     pub fn cli() -> std::result::Result<(), HyperkitError> {
@@ -391,6 +410,8 @@ pub mod cli {
                 let operation = format!("--{}", operation);
                 configer(&flag, &username, &hispath, &operation).ugh();
             }
+            Some(Commandd::Yank { flag }) => yank(flag).ugh(),
+            Some(Commandd::Indicate { file }) => indicate(file).ugh(),
             None => {}
         }
         Ok(())

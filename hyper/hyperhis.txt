@@ -1,101 +1,101 @@
 #V2
-go .config/
+indicate alacritty-term+scanlines.png
+clean
+go Templates/
 see
-tree htop/
-tree Trolltech.conf
-tree 
-clear
-clean
-time
-clean
+indicate blue-abstract-3840x2160-25119.jpg
 end
-time
 clean
+indicate Templates//blue-abstract-3840x2160-25119.jpg
+indicate Templates/blue-abstract-3840x2160-25119.jpg
 end
+clean
+indicate Templates/blue-abstract-3840x2160-25119.jpg
 clean
 see
-clean
-yank temp\\
-yank temp
-clean
-yank os
-clean
-yank bios
-clean
-end
-clean
-yank disk
-end
-yank disk
-clean\\
-clean
-end
-clean
-yank mem
-yank disk
-end
-clean
-yank disk
-end
-yank disk
-end
-yank disk
-clean
-yank temp
-clean
-end
-clean
-yank disk
-end
-yank disk
-end
-clean
-yank disk
-end
-clean
-yank disk
-end
-yank disk
-end
-clean
-yank disk
-clean
-yank disk
+indicate programming
+go programming/Rust/practice/Hyperkit/
+see
+indicate Cargo.toml
+indicate Cargo.lock
+go src/
+see
+indicate backend.rs
+go back
+see
+go back
+go /
+see
+go sys/
+see
+go class/
+see
+go bdi/
+see
+indicate 251:0/
+indicate 251:0
+go 251:0/
+see
+indicate uevent
+go back
+see
+go back
+go /home/
+see
+go mohammed/
 see
 clean
 end
 clean
-yank disk
-emd
-clear
+indicate Templates/blue-abstract-3840x2160-25119.jpg
+indicate Templates/Test.html
 clean
-end
-yank disk
-clean
-end
-clean
-./
-clean
-yank disk
-clean
-end
-clean
-end
-clean
-hash sha224
-clean
+go Templates/
 see
+indicate blue-abstract-3840x2160-25119.jpg
+indicate alacritty-term+scanlines.png
+see
+indicate permission\\ -\\ Google\\ Search
+go permission\\ -\\ Google\\ Search
+go test
+see
+indicate saved_resource.html
 clean
 end
 clean
-hash sha224
+go test
+go Templates/
+see
+fo test/
+go test/
+see
+indicate apps.html
+indicate app.html
+clean
+cargo run
+end
+clean
+indicate app.html
+go test/
+go Templates/
+go te
+go test
+see
+indicate app.html
+end
+indicate Templates/test/app.html
+end
+indicate Templates/test/app.html
+end
+clean
+indicate Templates/test/app.html
+end
+indicate Templates/test/app.html
+clean
+end
+help --built-in-apps
 clean
 end
 clean
-hash sha224
-clean
-ed
-end
-clean
-hash sha224
+help --built-in-apps
 end

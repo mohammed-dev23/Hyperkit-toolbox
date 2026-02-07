@@ -1,10 +1,17 @@
 use crate::backend::clean::ExtractOptions;
 use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
+use chrono::Local;
 use colored::*;
 use core::str;
+use infer::get_from_path;
 
+use std::fs::File;
 use std::io::{self, Read, Write};
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::time::UNIX_EPOCH;
 use std::{env, fs, path};
 use tar::Archive;
 
@@ -489,5 +496,101 @@ pub fn cli_zip(
         }
         _ => todo!(),
     }
+    Ok(())
+}
+
+pub fn indicate(file_path: &str) -> std::result::Result<(), HyperkitError> {
+    let tell = tell();
+
+    if let Some(file_kind) = get_from_path(file_path)
+        .errh(Some(file_path.to_string()))
+        .ughv()
+    {
+        let file_name = Path::new(file_path)
+            .file_name()
+            .extract()
+            .to_str()
+            .extract();
+        let file_ext = file_kind.extension();
+        let file_mime = file_kind.mime_type();
+        let file_open = File::open(&file_path)
+            .errh(Some(file_path.to_string()))
+            .ughf()?;
+        let file_meta = file_open.metadata().errh(None)?;
+        let file_perm = if file_meta.permissions().readonly() == true {
+            "ReadOnly"
+        } else {
+            "Editable"
+        };
+        let file_size = file_meta.len() / 1024;
+        let last_time_modfied = file_meta
+            .modified()
+            .errh(None)?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| {
+                HyperkitError::SystemErr(crate::backend::safe::SystemErr::UnknownSysErr(None))
+            })?
+            .as_secs();
+        let last_time_modfied = chrono::DateTime::from_timestamp(last_time_modfied as i64, 0)
+            .extract()
+            .with_timezone(&Local);
+        let file_full_path = fs::canonicalize(file_path)
+            .errh(Some(file_path.to_string()))
+            .ughv()
+            .to_string_lossy()
+            .to_string();
+        #[cfg(unix)]
+        let file_mode = file_meta.permissions().mode();
+
+        println!(
+            "   ~{} >> [{}]",
+            "File Name".bright_cyan().bold(),
+            file_name.bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [{}]",
+            "File Type".bright_cyan().bold(),
+            file_ext.bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [{}]",
+            "File Mime".bright_cyan().bold(),
+            file_mime.bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [{}]",
+            "File Permission".bright_cyan().bold(),
+            file_perm.bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [{}]",
+            "File Path".bright_cyan().bold(),
+            file_full_path.bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [\x1b[33m\x1b[1m{:#o}\x1b[0m\x1b[0m]",
+            "File Mode".bright_cyan().bold(),
+            file_mode
+        );
+        println!(
+            "   ~{} >> [{}]",
+            "Last Time Modified On".bright_cyan().bold(),
+            last_time_modfied.to_string().bright_yellow().bold()
+        );
+        println!(
+            "   ~{} >> [{} {}]",
+            "File Size".bright_cyan().bold(),
+            file_size.to_string().bright_yellow().bold(),
+            "Kib".bright_green().bold()
+        );
+    } else {
+        println!(
+            "[{tell:?}]~>{} due to [{}]",
+            "Error".red().bold(),
+            "Unsupported File Type or File is too small or Empty"
+                .red()
+                .bold()
+        )
+    };
     Ok(())
 }

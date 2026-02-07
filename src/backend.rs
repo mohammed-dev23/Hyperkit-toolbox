@@ -165,6 +165,18 @@ pub mod commands {
                     "tree".bright_blue(),
                     "<Path| default value = .>".bright_purple()
                 );
+                println!(
+                    "   *{} {} {} to get informations about your system ",
+                    "enter".green(),
+                    "yank".bright_blue(),
+                    "<info:<mem / temp / cpu / bios / os / battery / disk>>".purple()
+                );
+                println!(
+                    "   *{} {} {} to get informations a file in your system ",
+                    "enter".green(),
+                    "indicate".bright_blue(),
+                    "<File>".purple()
+                );
             }
             "--about" => {
                 println!(

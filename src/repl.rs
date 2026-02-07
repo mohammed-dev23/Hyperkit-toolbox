@@ -1,6 +1,6 @@
 use crate::all_tools::{
     cryptography_tools::transmute,
-    files_tools::{ZipArg, ZipDir, tar, zip},
+    files_tools::{ZipArg, ZipDir, indicate, tar, zip},
     science_tools::calc,
     system_tools::{treee, yank},
 };
@@ -427,6 +427,13 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
 
                 if let Ok(o) = flag {
                     yank(&o).ugh();
+                }
+            }
+            "indicate" => {
+                let file_path = token(&data, 1).checker(Some("file".to_string())).ughf();
+
+                if let Ok(o) = file_path {
+                    indicate(&o).ughv();
                 }
             }
             "end" => {
