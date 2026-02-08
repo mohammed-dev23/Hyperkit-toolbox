@@ -677,6 +677,7 @@ pub mod safe {
         ArchiveErr(ArchiveErr),
         MissingParameter(Option<String>),
         SystemErr(SystemErr),
+        CryptographyErr(CryptographyErr),
         ShouldNotHappen,
     }
 
@@ -734,6 +735,11 @@ pub mod safe {
         BadAddress(Option<String>),
         NameTooLong(Option<String>),
         UnknownSysErr(Option<String>),
+    }
+
+    #[derive(Debug)]
+    pub enum CryptographyErr {
+        UnsupportedFormat(Option<String>),
     }
 
     impl fmt::Display for HyperkitError {
@@ -1018,6 +1024,15 @@ pub mod safe {
                         "{}: due to [{}: <{}>]",
                         "Error".bright_red().bold(),
                         "Unknown system error".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                },
+                HyperkitError::CryptographyErr(e) => match e {
+                    CryptographyErr::UnsupportedFormat(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Unsupported Format".bright_red(),
                         err_res.extract().bright_yellow().bold()
                     ),
                 },

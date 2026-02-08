@@ -1,70 +1,4 @@
 #V2
-indicate alacritty-term+scanlines.png
-clean
-go Templates/
-see
-indicate blue-abstract-3840x2160-25119.jpg
-end
-clean
-indicate Templates//blue-abstract-3840x2160-25119.jpg
-indicate Templates/blue-abstract-3840x2160-25119.jpg
-end
-clean
-indicate Templates/blue-abstract-3840x2160-25119.jpg
-clean
-see
-indicate programming
-go programming/Rust/practice/Hyperkit/
-see
-indicate Cargo.toml
-indicate Cargo.lock
-go src/
-see
-indicate backend.rs
-go back
-see
-go back
-go /
-see
-go sys/
-see
-go class/
-see
-go bdi/
-see
-indicate 251:0/
-indicate 251:0
-go 251:0/
-see
-indicate uevent
-go back
-see
-go back
-go /home/
-see
-go mohammed/
-see
-clean
-end
-clean
-indicate Templates/blue-abstract-3840x2160-25119.jpg
-indicate Templates/Test.html
-clean
-go Templates/
-see
-indicate blue-abstract-3840x2160-25119.jpg
-indicate alacritty-term+scanlines.png
-see
-indicate permission\\ -\\ Google\\ Search
-go permission\\ -\\ Google\\ Search
-go test
-see
-indicate saved_resource.html
-clean
-end
-clean
-go test
-go Templates/
 see
 fo test/
 go test/
@@ -98,4 +32,70 @@ clean
 end
 clean
 help --built-in-apps
+end
+clean
+see
+clean
+indicate Templates/test/app.html
+indicate Templates/alacritty-term+scanlines.png
+clean
+end
+clean
+seal
+seal sha256
+clean
+end
+seal sha256
+clean
+end
+seal sha256
+clean
+end
+clean
+see
+go Documents/
+see
+seal sha256 hex --file not_hashed.txt idk.txt
+seal sha256 hex --file not_hashed.txt test.txt
+clean
+end
+clean
+seal sha256 hex --file not_hashed.txt hmmm.txt
+go Documents/
+see
+seal sha256 hex --file not_hashed.txt hmmm.txt
+clean
+end
+clean
+seal sha256 hex --file not_hashed.txt hmmm2.txt
+go Documents/
+seal sha256 hex --file not_hashed.txt hmmm2.txt
+end
+clean
+end
+clean
+see
+clean
+see
+clean
+seal sha256 hex --file not_hashed.txt hmmm1.txt
+go Documents/
+seal sha256 hex --file not_hashed.txt hmmm1.txt
+seal sha512 hex --file not_hashed.txt hmmm2.txt
+clean
+end
+clean
+go Documents/
+seal sha512 hex --file not_hashed.txt hmmm2.txt
+end
+seal sha512 hex --file not_hashed.txt hmmm3.txt
+go Documents/
+seal sha512 hex --file not_hashed.txt hmmm3.txt
+clean
+end
+seal sha512 hex --file not_hashed.txt hmmm4.txt
+go Documents/
+seal sha512 hex --file not_hashed.txt hmmm4.txt
+seal sha256 hex --file not_hashed.txt hmmm4.txt
+seal sha256 hex --file not_hashed.txt hmmm44.txt
 end

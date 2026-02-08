@@ -1,5 +1,5 @@
 use crate::all_tools::{
-    cryptography_tools::transmute,
+    cryptography_tools::{seal, transmute},
     files_tools::{ZipArg, ZipDir, indicate, tar, zip},
     science_tools::calc,
     system_tools::{treee, yank},
@@ -434,6 +434,23 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
 
                 if let Ok(o) = file_path {
                     indicate(&o).ughv();
+                }
+            }
+            "seal" => {
+                let type_ = token(&data, 1).checker(Some("type".to_string())).ughf();
+                let outpot_format = token(&data, 2).checker(Some("format".to_string())).ughf();
+                let kind = token(&data, 3).checker(Some("kind".to_string())).ughf();
+                let file = token(&data, 4)
+                    .checker(Some("file path".to_string()))
+                    .ughf();
+                let output_file_name = token(&data, 5)
+                    .checker(Some("output file name".to_string()))
+                    .ughf();
+
+                if let (Ok(o), Ok(r), Ok(s), Ok(f), Ok(l)) =
+                    (type_, outpot_format, kind, file, output_file_name)
+                {
+                    seal(&o, &r, &s, &f, &l).ugh();
                 }
             }
             "end" => {

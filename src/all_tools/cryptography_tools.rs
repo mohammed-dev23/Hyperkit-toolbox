@@ -1,4 +1,4 @@
-use crate::backend::safe::Ugh;
+use crate::backend::safe::{Ugh, Ughv};
 use crate::backend::standard::tell;
 use crate::backend::{
     clean::read_file_cont,
@@ -6,7 +6,10 @@ use crate::backend::{
 };
 use colored::*;
 use core::str;
-use std::fs;
+use sha2::digest::generic_array::{ArrayLength, GenericArray};
+use std::{fs, io};
+
+use sha2::{Digest, Sha256, Sha512};
 
 use base64::{
     prelude::{BASE64_STANDARD, BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE},
@@ -157,6 +160,92 @@ pub fn transmute(
                 "No type was supplied".red().bold()
             );
         }
+    }
+    Ok(())
+}
+
+pub trait OutputFormat {
+    fn format(&self, format: &str) -> std::result::Result<String, HyperkitError>;
+}
+
+impl<T, U: ArrayLength<T>> OutputFormat for GenericArray<T, U>
+where
+    GenericArray<T, U>: AsRef<[u8]>,
+{
+    fn format(&self, format: &str) -> std::result::Result<String, HyperkitError> {
+        let formated = match format {
+            "base64" => Ok(BASE64_STANDARD.encode(&self)),
+            "hex" => Ok(hex::encode(&self)),
+            _ => Err(HyperkitError::CryptographyErr(
+                crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+            )),
+        };
+        formated
+    }
+}
+
+fn hash_sha256_and_write_to_file(
+    file: &str,
+    output_file_name: &str,
+    format_type: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let mut open_file = fs::File::open(&file).errh(Some(file.to_string())).ughf()?;
+    let mut hasher = Sha256::new();
+    io::copy(&mut open_file, &mut hasher).errh(None).ughf()?;
+    let sha256 = hasher.finalize().format(format_type).ughf()?;
+    fs::File::create(output_file_name).errh(None).ughf()?;
+    fs::write(output_file_name, sha256).errh(None).ughv();
+    Ok(())
+}
+
+fn hash_sha512_and_write_to_file(
+    file: &str,
+    output_file_name: &str,
+    format_type: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let mut open_file = fs::File::open(&file).errh(Some(file.to_string())).ughf()?;
+    let mut hasher = Sha512::new();
+    io::copy(&mut open_file, &mut hasher).errh(None).ughf()?;
+    let sha512 = hasher.finalize().format(format_type).ughf()?;
+    fs::File::create(output_file_name).errh(None).ughf()?;
+    fs::write(output_file_name, sha512).errh(None).ughv();
+    Ok(())
+}
+
+pub fn seal(
+    type_: &str,
+    output_format: &str,
+    kind: &str,
+    file: &str,
+    output_file_name: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let tell = tell();
+    match type_ {
+        "sha256" => match kind {
+            "--file" => hash_sha256_and_write_to_file(file, output_file_name, output_format)
+                ._success_res("Seal", "Sealed Successfully")
+                .ughv(),
+            _ => println!(
+                "[{tell:?}]~>{} due to [{}]",
+                "Error".red().bold(),
+                "missing file kind".red().bold()
+            ),
+        },
+        "sha512" => match kind {
+            "--file" => hash_sha512_and_write_to_file(file, output_file_name, output_format)
+                ._success_res("Seal", "Sealed Successfully!")
+                .ughv(),
+            _ => println!(
+                "[{tell:?}]~>{} due to [{}]",
+                "Error".red().bold(),
+                "missing file kind".red().bold()
+            ),
+        },
+        _ => println!(
+            "[{tell:?}]~>{} due to [{}]",
+            "Error".red().bold(),
+            "missing type".red().bold()
+        ),
     }
     Ok(())
 }
