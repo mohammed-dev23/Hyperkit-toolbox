@@ -4,12 +4,18 @@ use crate::backend::{
     clean::read_file_cont,
     safe::{ErrH, HyperkitError, Success},
 };
+use chacha20poly1305::{AeadInPlace, Key};
 use colored::*;
 use core::str;
 use sha2::digest::generic_array::{ArrayLength, GenericArray};
+use sha2::{Digest, Sha256, Sha512};
+use std::io::Read;
 use std::{fs, io};
 
-use sha2::{Digest, Sha256, Sha512};
+use chacha20poly1305::{
+    ChaCha20Poly1305, Nonce,
+    aead::{AeadCore, KeyInit, OsRng},
+};
 
 use base64::{
     prelude::{BASE64_STANDARD, BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE},
@@ -184,6 +190,32 @@ where
     }
 }
 
+impl OutputFormat for md5::Digest {
+    fn format(&self, format: &str) -> std::result::Result<String, HyperkitError> {
+        let formated = match format {
+            "base64" => Ok(BASE64_STANDARD.encode(**self)),
+            "hex" => Ok(hex::encode(**self)),
+            _ => Err(HyperkitError::CryptographyErr(
+                crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+            )),
+        };
+        formated
+    }
+}
+
+impl OutputFormat for Vec<u8> {
+    fn format(&self, format: &str) -> std::result::Result<String, HyperkitError> {
+        let formated = match format {
+            "base64" => Ok(BASE64_STANDARD.encode(&self)),
+            "hex" => Ok(hex::encode(&self)),
+            _ => Err(HyperkitError::CryptographyErr(
+                crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+            )),
+        };
+        formated
+    }
+}
+
 fn hash_sha256_and_write_to_file(
     file: &str,
     output_file_name: &str,
@@ -212,35 +244,137 @@ fn hash_sha512_and_write_to_file(
     Ok(())
 }
 
+fn hash_md5_and_write_to_file(
+    file: &str,
+    output_file_name: &str,
+    format_type: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let mut open_file = fs::File::open(&file).errh(Some(file.to_string())).ughf()?;
+    let mut stored = String::new();
+    open_file.read_to_string(&mut stored).errh(None).ughf()?;
+    let md5 = md5::compute(stored.trim()).format(format_type)?;
+    fs::File::create(output_file_name).errh(None).ughf()?;
+    fs::write(output_file_name, md5).errh(None).ughv();
+    Ok(())
+}
+
+fn enc_dec_chacha20poly1305(
+    file: &str,
+    output_file_name: &str,
+    passwored: &str,
+    op: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let tell = tell();
+
+    if passwored.len() != 32 {
+        return Err(HyperkitError::CryptographyErr(
+            crate::backend::safe::CryptographyErr::PasswordTooShortOrLong(Some(
+                passwored.to_string(),
+            )),
+        ));
+    }
+
+    let key = Key::from_slice(passwored.as_bytes());
+    let cipher = ChaCha20Poly1305::new(&key);
+    let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng);
+
+    let mut buffer: Vec<u8> = Vec::new();
+
+    let mut open_file = fs::File::open(&file).errh(None).ughf()?;
+    let mut stored = Vec::new();
+    open_file.read_to_end(&mut stored).errh(None).ughf()?;
+
+    buffer.extend_from_slice(&stored);
+
+    match op {
+        "--seal" => {
+            cipher
+                .encrypt_in_place(&nonce, b"", &mut buffer)
+                .map_err(|_| {
+                    HyperkitError::CryptographyErr(
+                        crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+                    )
+                })
+                .ughf()?;
+
+            let mut out = Vec::new();
+            out.extend_from_slice(&nonce);
+            out.extend_from_slice(&buffer);
+
+            fs::write(output_file_name, out).errh(None).ughv();
+        }
+        "--unseal" => {
+            let data = fs::read(file).errh(Some(file.to_string())).ughf()?;
+
+            let (noncee, ciphertxt) = data.split_at(12);
+            let mut buffer = ciphertxt.to_vec();
+
+            let noncee = Nonce::from_slice(&noncee);
+
+            cipher
+                .decrypt_in_place(&noncee, b"", &mut buffer)
+                .map_err(|_| {
+                    HyperkitError::CryptographyErr(
+                        crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+                    )
+                })
+                .ughf()?;
+
+            fs::write(output_file_name, buffer).errh(None).ughv();
+        }
+        _ => println!(
+            "[{tell:?}]~>{} due to [{}]",
+            "Error".red().bold(),
+            "missing opration".red().bold()
+        ),
+    }
+
+    Ok(())
+}
+
 pub fn seal(
     type_: &str,
     output_format: &str,
-    kind: &str,
+    op: &str,
     file: &str,
     output_file_name: &str,
+    pass: &str,
 ) -> std::result::Result<(), HyperkitError> {
     let tell = tell();
     match type_ {
-        "sha256" => match kind {
-            "--file" => hash_sha256_and_write_to_file(file, output_file_name, output_format)
+        "sha256" => match op {
+            "--seal" => hash_sha256_and_write_to_file(file, output_file_name, output_format)
                 ._success_res("Seal", "Sealed Successfully")
                 .ughv(),
             _ => println!(
                 "[{tell:?}]~>{} due to [{}]",
                 "Error".red().bold(),
-                "missing file kind".red().bold()
+                "This type of hashing is unsealable!".red().bold()
             ),
         },
-        "sha512" => match kind {
-            "--file" => hash_sha512_and_write_to_file(file, output_file_name, output_format)
+        "sha512" => match op {
+            "--seal" => hash_sha512_and_write_to_file(file, output_file_name, output_format)
                 ._success_res("Seal", "Sealed Successfully!")
                 .ughv(),
             _ => println!(
                 "[{tell:?}]~>{} due to [{}]",
                 "Error".red().bold(),
-                "missing file kind".red().bold()
+                "This type of hashing is unsealable!".red().bold()
             ),
         },
+        "md5" => match op {
+            "--seal" => hash_md5_and_write_to_file(file, output_file_name, output_format)
+                ._success_res("Seal", "Sealed Successfully!")
+                .ughv(),
+            _ => println!(
+                "[{tell:?}]~>{} due to [{}]",
+                "Error".red().bold(),
+                "This type of hashing is unsealable!".red().bold()
+            ),
+        },
+        "chacha20poly1305" => {
+            enc_dec_chacha20poly1305(file, output_file_name, pass, op).ughv();
+        }
         _ => println!(
             "[{tell:?}]~>{} due to [{}]",
             "Error".red().bold(),

@@ -447,10 +447,12 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
                     .checker(Some("output file name".to_string()))
                     .ughf();
 
+                let pass = token(&data, 6);
+
                 if let (Ok(o), Ok(r), Ok(s), Ok(f), Ok(l)) =
                     (type_, outpot_format, kind, file, output_file_name)
                 {
-                    seal(&o, &r, &s, &f, &l).ugh();
+                    seal(&o, &r, &s, &f, &l, &pass).ugh();
                 }
             }
             "end" => {

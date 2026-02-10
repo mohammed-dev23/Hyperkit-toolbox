@@ -740,6 +740,7 @@ pub mod safe {
     #[derive(Debug)]
     pub enum CryptographyErr {
         UnsupportedFormat(Option<String>),
+        PasswordTooShortOrLong(Option<String>),
     }
 
     impl fmt::Display for HyperkitError {
@@ -1033,6 +1034,13 @@ pub mod safe {
                         "{}: due to [{}: <{}>]",
                         "Error".bright_red().bold(),
                         "Unsupported Format".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::PasswordTooShortOrLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "The password must be 32 in lenght!".bright_red(),
                         err_res.extract().bright_yellow().bold()
                     ),
                 },
