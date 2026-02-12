@@ -1,93 +1,4 @@
 #V2
-clean
-end
-yank battery
-clean
-end
-clean
-yank temp
-clean
-end
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-clean
-see
-clean
-see
-seal sha256 base64 --seal test1_seal.txt res_test1_seal.txt
-clean
-seal sha256 hex --seal test1_seal.txt res2_test1_seal.txt
-see
-forge test2_seal.txt
-go test2_seal.txt
-clean
-see
-seal sha256 hex --seal test2_seal.txt res_test2_seal.txt
-see
-clean
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-forge test1_md5_seal.txt
-see
-seal md5 hex --seal test1_md5_seal.txt res_test1_md5__seal.txt
-clean
-end
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-seal md5 hex --seal test2_md5_seal.txt res_test2_md5__seal.txt
-clean
-end
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-seal ChaCha20Poly1305 hex --seal test1_chacha20_seal.txt res_test1_chacha20_seal.tx\nt gym2008m$mohammed&amarneh*test
-see
-clean
-end
-seal ChaCha20Poly1305 hex --seal res_test1_chacha20_seal.txt res_test2_chacha20_
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-see
-seal ChaCha20Poly1305 hex --seal test1_chacha20_seal.txt res_test1_chacha20_seal.tx\nt gym2008m$mohammed&amarneh*test
-clean
-end
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-seal ChaCha20Poly1305 hex --seal res2_test1_chacha20_seal.txt res2_test2_chacha20_seal.txt\nt gym2008m$mohammed&amarneh*test
-seal ChaCha20Poly1305 hex --seal res2_test1_chacha20_seal.txt res2_test2_chacha20_seal.txt\nt 
-end
-seal ChaCha20Poly1305 hex --seal res2_test1_chacha20_seal.txt res2_test2_chacha20_seal.txt\nt
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-see
-clean
-see
-seal ChaCha20Poly1305 hex --seal res2_test1_chacha20_seal.txt res2_test2_chacha20_seal.txt\nt
-end
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-seal ChaCha20Poly1305 hex --seal res2_test1_chacha20_seal.txt res2_test2_chacha20_seal.txt\nt
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-forge test5_chacha20_seal.txt
-seal ChaCha20Poly1305 hex --seal test5_chacha20_seal.txt res_test5_chacha20.txt gym2008m
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-see
-seal ChaCha20Poly1305 hex --seal res_test5_chacha20.txt res_res_test5_chacha20.txt gym2008m
-end
-clean
-seal ChaCha20Poly1305 hex --seal res_test5_chacha20.txt res_res_test5_chacha20.txt gym2008m
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-seal ChaCha20Poly1305 hex --seal test4_chacha20_seal.txt res_test4_chacha20_seal.txt
-peek res_test4_chacha20_seal.txt
-seal ChaCha20Poly1305 hex --unseal res_test4_chacha20_seal.txt res2_test4_chacha20_seal.txt
-seal ChaCha20Poly1305 hex --seal test4_chacha20_seal.txt res3_test4_chacha20_seal.txt
-seal ChaCha20Poly1305 hex --unseal res3_test4_chacha20_seal.txt res4_test4_chacha20_seal.txt
-clean
 see
 clean
 end
@@ -98,4 +9,93 @@ clean
 seal ChaCha20Poly1305 None --seal test1_chacha20_seal.txt res_test1_chacha20_seal.txt
 seal ChaCha20Poly1305 None --seal test1_chacha20_seal.txt res_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
 seal ChaCha20Poly1305 None --unseal res_test1_chacha20_seal.txt res2_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+yank temp
+clean
+yank bat
+yank battery
+clean
+end
+clean
+see
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+see
+clean
+see
+forge test1_aes_seal.txt
+clean
+see
+clean
+see
+seal aes256gcm None --seal test1_aes_seal.txt res_test1_aes_seal.txt gym2008m$mohammed2008eng&prog&hy
+clean
+seal aes256gcm None --unseal res_test1_aes_seal.txt res2_test1_aes_seal.txt gym2008m$mohammed2008eng&prog&hy
+clean
+end
+clean
+see
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+see
+clean
+see
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+see
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+clean
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+clean
+see
+seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+seal chacha20poly1305 --seal test1_aes_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+seal chacha20poly1305 None --seal test1_aes_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+see
+clean
+see
+seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+clean
+see
+seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+clean
+seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+clean
+seal chacha20poly1305 None --seal test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m
+seal chacha20poly1305 None --unseal res4_test1_chacha20_seal.txt res5_test1_chacha20_seal.txt gym2008m
+clean
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+see
+seal aes256gcm None --seal test2_aes_seal.txt res_test2_aes_seal.txt gym2008m
+seal aes256gcm None --seal res_test2_aes_seal.txt res2_test2_aes_seal.txt  gym2008m
+clean
+seal aes256gcm None --unseal res_test2_aes_seal.txt res3_test2_aes_seal.txt  gym2008m
+clean
+end
+clean
+go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+clean
+see
+seal md5 hex --seal test1_md5_seal.txt res_test1_md5_seal.txt
+peek res_test1_md5_seal.txt
 end

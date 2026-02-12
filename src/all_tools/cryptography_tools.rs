@@ -4,6 +4,9 @@ use crate::backend::{
     clean::read_file_cont,
     safe::{ErrH, HyperkitError, Success},
 };
+use aes_gcm::Aes256Gcm;
+use aes_gcm::aead::rand_core::RngCore;
+use argon2::Argon2;
 use chacha20poly1305::{AeadInPlace, Key};
 use colored::*;
 use core::str;
@@ -169,7 +172,6 @@ pub fn transmute(
     }
     Ok(())
 }
-
 pub trait OutputFormat {
     fn format(&self, format: &str) -> std::result::Result<String, HyperkitError>;
 }
@@ -250,9 +252,9 @@ fn hash_md5_and_write_to_file(
     format_type: &str,
 ) -> std::result::Result<(), HyperkitError> {
     let mut open_file = fs::File::open(&file).errh(Some(file.to_string())).ughf()?;
-    let mut stored = String::new();
-    open_file.read_to_string(&mut stored).errh(None).ughf()?;
-    let md5 = md5::compute(stored.trim()).format(format_type)?;
+    let mut md5_hash = md5::Context::new();
+    io::copy(&mut open_file, &mut md5_hash).errh(None).ughf()?;
+    let md5 = md5_hash.finalize().format(format_type).ughf()?;
     fs::File::create(output_file_name).errh(None).ughf()?;
     fs::write(output_file_name, md5).errh(None).ughv();
     Ok(())
@@ -266,15 +268,16 @@ fn enc_dec_chacha20poly1305(
 ) -> std::result::Result<(), HyperkitError> {
     let tell = tell();
 
-    if passwored.len() != 32 {
-        return Err(HyperkitError::CryptographyErr(
-            crate::backend::safe::CryptographyErr::PasswordTooShortOrLong(Some(
-                passwored.to_string(),
-            )),
-        ));
-    }
+    let mut salt = [0u8; 16];
+    OsRng.fill_bytes(&mut salt);
+    let mut out_passwored = [0u8; 32];
 
-    let key = Key::from_slice(passwored.as_bytes());
+    Argon2::default()
+        .hash_password_into(passwored.as_bytes(), &salt, &mut out_passwored)
+        .errh(None)
+        .ughf()?;
+
+    let key = Key::from_slice(&out_passwored);
     let cipher = ChaCha20Poly1305::new(&key);
     let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng);
 
@@ -298,6 +301,7 @@ fn enc_dec_chacha20poly1305(
                 .ughf()?;
 
             let mut out = Vec::new();
+            out.extend_from_slice(&salt);
             out.extend_from_slice(&nonce);
             out.extend_from_slice(&buffer);
 
@@ -306,16 +310,116 @@ fn enc_dec_chacha20poly1305(
         "--unseal" => {
             let data = fs::read(file).errh(Some(file.to_string())).ughf()?;
 
-            let (noncee, ciphertxt) = data.split_at(12);
+            let (salt, rest) = data.split_at(16);
+            let mut out_pass_dec = [0u8; 32];
+
+            Argon2::default()
+                .hash_password_into(passwored.as_bytes(), salt, &mut out_pass_dec)
+                .errh(None)
+                .ughf()?;
+
+            let key = Key::from_slice(&mut out_pass_dec);
+
+            let cipher_dec = ChaCha20Poly1305::new(&key);
+
+            let (noncee, ciphertxt) = rest.split_at(12);
             let mut buffer = ciphertxt.to_vec();
 
             let noncee = Nonce::from_slice(&noncee);
 
-            cipher
+            cipher_dec
                 .decrypt_in_place(&noncee, b"", &mut buffer)
                 .map_err(|_| {
                     HyperkitError::CryptographyErr(
+                        crate::backend::safe::CryptographyErr::DecryptionFailed(None),
+                    )
+                })
+                .ughf()?;
+
+            fs::write(output_file_name, buffer).errh(None).ughv();
+        }
+        _ => println!(
+            "[{tell:?}]~>{} due to [{}]",
+            "Error".red().bold(),
+            "missing opration".red().bold()
+        ),
+    }
+
+    Ok(())
+}
+
+fn enc_dec_aes(
+    file: &str,
+    output_file_name: &str,
+    passwored: &str,
+    op: &str,
+) -> std::result::Result<(), HyperkitError> {
+    let tell = tell();
+
+    let mut salt = [0u8; 16];
+    OsRng.fill_bytes(&mut salt);
+    let mut out_passwored = [0u8; 32];
+
+    Argon2::default()
+        .hash_password_into(passwored.as_bytes(), &salt, &mut out_passwored)
+        .errh(None)
+        .ughf()?;
+
+    let key = Key::from_slice(&out_passwored);
+    let cipher = Aes256Gcm::new(&key);
+    let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
+
+    let mut buffer: Vec<u8> = Vec::new();
+
+    let mut open_file = fs::File::open(&file).errh(None).ughf()?;
+    let mut stored = Vec::new();
+    open_file.read_to_end(&mut stored).errh(None).ughf()?;
+
+    buffer.extend_from_slice(&stored);
+
+    match op {
+        "--seal" => {
+            cipher
+                .encrypt_in_place(&nonce, b"", &mut buffer)
+                .map_err(|_| {
+                    HyperkitError::CryptographyErr(
                         crate::backend::safe::CryptographyErr::UnsupportedFormat(None),
+                    )
+                })
+                .ughf()?;
+
+            let mut out = Vec::new();
+            out.extend_from_slice(&salt);
+            out.extend_from_slice(&nonce);
+            out.extend_from_slice(&buffer);
+
+            fs::write(output_file_name, out).errh(None).ughv();
+        }
+        "--unseal" => {
+            let data = fs::read(file).errh(Some(file.to_string())).ughf()?;
+
+            let (salt, rest) = data.split_at(16);
+            let mut out_pass_dec = [0u8; 32];
+
+            Argon2::default()
+                .hash_password_into(passwored.as_bytes(), salt, &mut out_pass_dec)
+                .errh(None)
+                .ughf()?;
+
+            let key = Key::from_slice(&mut out_pass_dec);
+
+            let cipher_dec = Aes256Gcm::new(&key);
+
+            let (noncee, ciphertxt) = rest.split_at(12);
+            let mut buffer = ciphertxt.to_vec();
+
+            let noncee = Nonce::from_slice(&noncee);
+
+            cipher_dec
+                .decrypt_in_place(&noncee, b"", &mut buffer)
+                .map_err(|_| {
+                    HyperkitError::CryptographyErr(
+                        crate::backend::safe::CryptographyErr::DecryptionFailed(None),
                     )
                 })
                 .ughf()?;
@@ -373,13 +477,53 @@ pub fn seal(
             ),
         },
         "chacha20poly1305" => {
-            enc_dec_chacha20poly1305(file, output_file_name, pass, op).ughv();
+            if pass.is_empty() {
+                return Err(HyperkitError::MissingParameter(Some(
+                    "Password".to_string(),
+                )));
+            }
+            if output_format != "None" {
+                return Err(HyperkitError::MissingParameter(Some(
+                    "format is missing or not <None>".to_string(),
+                )));
+            }
+
+            enc_dec_chacha20poly1305(file, output_file_name, pass, op)
+                ._success_res("Seal", "Seal Successed!")
+                .ughf()?;
         }
-        _ => println!(
-            "[{tell:?}]~>{} due to [{}]",
-            "Error".red().bold(),
-            "missing type".red().bold()
-        ),
+        "aes256gcm" => {
+            if pass.is_empty() {
+                return Err(HyperkitError::MissingParameter(Some(
+                    "Password".to_string(),
+                )));
+            }
+            if output_format != "None" {
+                return Err(HyperkitError::MissingParameter(Some(
+                    "format is missing or not <None>".to_string(),
+                )));
+            }
+
+            enc_dec_aes(file, output_file_name, pass, op)
+                ._success_res("Seal", "Seal Successed!")
+                .ughf()?;
+        }
+        _ => {
+            if type_.is_empty() {
+                println!(
+                    "[{tell:?}]~>{} due to [{} <{}>]",
+                    "Error".red().bold(),
+                    "Unsupported Type!".red().bold(),
+                    type_.bright_yellow().bold()
+                )
+            } else {
+                println!(
+                    "[{tell:?}]~>{} due to [{}]",
+                    "Error".red().bold(),
+                    "missing type".red().bold()
+                )
+            }
+        }
     }
     Ok(())
 }

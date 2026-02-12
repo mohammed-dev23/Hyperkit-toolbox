@@ -660,6 +660,7 @@ pub mod safe {
         repl::GITHUBLINK,
         toml::toml,
     };
+    use argon2::Error;
     use colored::Colorize;
     use core::fmt;
     use nix::errno::Errno;
@@ -740,7 +741,23 @@ pub mod safe {
     #[derive(Debug)]
     pub enum CryptographyErr {
         UnsupportedFormat(Option<String>),
-        PasswordTooShortOrLong(Option<String>),
+        AssociatedDataTooLong(Option<String>),
+        InvalidAlgorithm(Option<String>),
+        KeyIdTooLong(Option<String>),
+        MemoryCostTooLow(Option<String>),
+        MemoryCostTooHigh(Option<String>),
+        OutputTooShort(Option<String>),
+        OutputTooLong(Option<String>),
+        PasswordTooLong(Option<String>),
+        SaltTooShort(Option<String>),
+        SaltTooLong(Option<String>),
+        SecretTooLong(Option<String>),
+        ThreadCountTooLow(Option<String>),
+        ThreadCountTooHigh(Option<String>),
+        TimeCostTooLow(Option<String>),
+        InvalidVersion(Option<String>),
+        DecryptionFailed(Option<String>),
+        UnknownCryptoErr,
     }
 
     impl fmt::Display for HyperkitError {
@@ -1036,12 +1053,123 @@ pub mod safe {
                         "Unsupported Format".bright_red(),
                         err_res.extract().bright_yellow().bold()
                     ),
-                    CryptographyErr::PasswordTooShortOrLong(err_res) => write!(
+                    CryptographyErr::AssociatedDataTooLong(err_res) => write!(
                         f,
                         "{}: due to [{}: <{}>]",
                         "Error".bright_red().bold(),
-                        "The password must be 32 in lenght!".bright_red(),
+                        "Associated data exceeds the maximum of 2³²−1 bytes.".bright_red(),
                         err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::InvalidAlgorithm(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "the hash string doesn't match the expected variant".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::InvalidVersion(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Version number in the hash string is not a recognised".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::KeyIdTooLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "The key id is too long".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::MemoryCostTooHigh(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Memory cost is too high".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::MemoryCostTooLow(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Memory cost is too low".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::OutputTooLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Hash output exceeds the maximum".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::OutputTooShort(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Hash output is below the minimum".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::PasswordTooLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Password is too long".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::SaltTooLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Salt exceeds the maximum".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::SaltTooShort(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Salt is shorter than the minimum".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::SecretTooLong(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Secret key exceeds the maximum".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::ThreadCountTooHigh(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Thread count is too high".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::ThreadCountTooLow(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Thread count is too low".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::TimeCostTooLow(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Time cost is too low".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::DecryptionFailed(err_res) => write!(
+                        f,
+                        "{}: due to [{}: <{}>]",
+                        "Error".bright_red().bold(),
+                        "Decryption Failed".bright_red(),
+                        err_res.extract().bright_yellow().bold()
+                    ),
+                    CryptographyErr::UnknownCryptoErr => write!(
+                        f,
+                        "{}: due to [{}]",
+                        "Error".bright_red().bold(),
+                        "Unknown crypto err".bright_red()
                     ),
                 },
             }
@@ -1484,6 +1612,71 @@ pub mod safe {
                             _ => HyperkitError::ShouldNotHappen,
                         },
                         _ => HyperkitError::ShouldNotHappen,
+                    };
+                    return Err(hypererr);
+                }
+            }
+        }
+    }
+
+    impl<T> ErrH for core::result::Result<T, Error> {
+        type Out = std::result::Result<T, HyperkitError>;
+
+        fn errh(self, res: Option<String>) -> Self::Out
+        where
+            Self: Sized,
+        {
+            match self {
+                Ok(o) => Ok(o),
+                Err(e) => {
+                    let hypererr = match e {
+                        Error::AdTooLong => HyperkitError::CryptographyErr(
+                            CryptographyErr::AssociatedDataTooLong(res),
+                        ),
+                        Error::AlgorithmInvalid => {
+                            HyperkitError::CryptographyErr(CryptographyErr::InvalidAlgorithm(res))
+                        }
+                        Error::MemoryTooLittle => {
+                            HyperkitError::CryptographyErr(CryptographyErr::MemoryCostTooLow(res))
+                        }
+                        Error::MemoryTooMuch => {
+                            HyperkitError::CryptographyErr(CryptographyErr::MemoryCostTooHigh(res))
+                        }
+                        Error::PwdTooLong => {
+                            HyperkitError::CryptographyErr(CryptographyErr::PasswordTooLong(res))
+                        }
+                        Error::SaltTooLong => {
+                            HyperkitError::CryptographyErr(CryptographyErr::SaltTooLong(res))
+                        }
+                        Error::SaltTooShort => {
+                            HyperkitError::CryptographyErr(CryptographyErr::SaltTooShort(res))
+                        }
+                        Error::OutputTooLong => {
+                            HyperkitError::CryptographyErr(CryptographyErr::OutputTooLong(res))
+                        }
+                        Error::OutputTooShort => {
+                            HyperkitError::CryptographyErr(CryptographyErr::OutputTooShort(res))
+                        }
+                        Error::ThreadsTooFew => {
+                            HyperkitError::CryptographyErr(CryptographyErr::ThreadCountTooLow(res))
+                        }
+                        Error::ThreadsTooMany => {
+                            HyperkitError::CryptographyErr(CryptographyErr::ThreadCountTooHigh(res))
+                        }
+                        Error::SecretTooLong => {
+                            HyperkitError::CryptographyErr(CryptographyErr::SecretTooLong(res))
+                        }
+                        Error::KeyIdTooLong => {
+                            HyperkitError::CryptographyErr(CryptographyErr::KeyIdTooLong(res))
+                        }
+                        Error::TimeTooSmall => {
+                            HyperkitError::CryptographyErr(CryptographyErr::TimeCostTooLow(res))
+                        }
+                        Error::VersionInvalid => {
+                            HyperkitError::CryptographyErr(CryptographyErr::InvalidVersion(res))
+                        }
+
+                        _ => HyperkitError::CryptographyErr(CryptographyErr::UnknownCryptoErr),
                     };
                     return Err(hypererr);
                 }
