@@ -1,101 +1,101 @@
 #V2
+clean
+end
+fang
+end
+fang
+end
+fang
+clean
+end
+fang
+clean
+cargo run
+clean
+fang
+clean
+end
+clean
+fang
+clean
+end
+fang
+clean
+end
+clean
+fang
+clean
 see
 clean
 end
 clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-clean
-seal ChaCha20Poly1305 None --seal test1_chacha20_seal.txt res_test1_chacha20_seal.txt
-seal ChaCha20Poly1305 None --seal test1_chacha20_seal.txt res_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-seal ChaCha20Poly1305 None --unseal res_test1_chacha20_seal.txt res2_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-yank temp
-clean
-yank bat
-yank battery
+fang
 clean
 end
 clean
-see
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-clean
-see
-forge test1_aes_seal.txt
-clean
-see
-clean
-see
-seal aes256gcm None --seal test1_aes_seal.txt res_test1_aes_seal.txt gym2008m$mohammed2008eng&prog&hy
-clean
-seal aes256gcm None --unseal res_test1_aes_seal.txt res2_test1_aes_seal.txt gym2008m$mohammed2008eng&prog&hy
+fang
 clean
 end
 clean
-see
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-clean
-see
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-see
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-clean
-see
-seal chacha20poly1305 --seal test1_chacha20_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-seal chacha20poly1305 --seal test1_aes_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-seal chacha20poly1305 None --seal test1_aes_seal.txt res3_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-see
-clean
-see
-seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-see
-seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-clean
-seal chacha20poly1305 None --unseal res3_test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m$mohammed2008eng&prog&hy
-end
-clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-clean
-seal chacha20poly1305 None --seal test1_chacha20_seal.txt res4_test1_chacha20_seal.txt gym2008m
-seal chacha20poly1305 None --unseal res4_test1_chacha20_seal.txt res5_test1_chacha20_seal.txt gym2008m
+fang
 clean
 end
 clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
-see
-seal aes256gcm None --seal test2_aes_seal.txt res_test2_aes_seal.txt gym2008m
-seal aes256gcm None --seal res_test2_aes_seal.txt res2_test2_aes_seal.txt  gym2008m
+fang
 clean
-seal aes256gcm None --unseal res_test2_aes_seal.txt res3_test2_aes_seal.txt  gym2008m
+end
+fang
+clean
+see
+clean
+fang
+end
+clean
+see
+clean
+fang
+end
+fang
+end
+clean
+fang
 clean
 end
 clean
-go programming/Rust/practice/Hyperkit/test/crypto_tools_test/
+fang
+end
 clean
-see
-seal md5 hex --seal test1_md5_seal.txt res_test1_md5_seal.txt
-peek res_test1_md5_seal.txt
+fang
+end
+fang
+end
+fang
+clean
+end
+fang
+clean
+end
+clean
+fang 192.168.1.84 -tcp --most-popular-ports --open-only
+fang 192.168.1.84 -tcp --top100 --open-only
+end
+clean
+fang 192.168.1.84 -tcp --most-popular-ports --open-only
+clean
+end
+clean
+fang 192.168.1.84 -tcp --most-popular-ports --open-only
+clean
+end
+clean
+fang 192.168.1.84 -tcp --full-tcp --open-only
+clean
+end
+fang 192.168.1.84 -tcp --full-tcp --open-only
+fang 192.168.1.84 -tcp --full-tcp 
+clean
+end
+clean
+fang 192.168.1.84 -tcp --full-tcp 
+clean
 end

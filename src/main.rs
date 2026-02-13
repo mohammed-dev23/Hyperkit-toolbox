@@ -1,6 +1,7 @@
 mod all_tools {
     pub mod cryptography_tools;
     pub mod files_tools;
+    pub mod networking_tools;
     pub mod science_tools;
     pub mod system_tools;
 }

@@ -1,6 +1,7 @@
 use crate::all_tools::{
     cryptography_tools::{seal, transmute},
     files_tools::{ZipArg, ZipDir, indicate, tar, zip},
+    networking_tools::fang,
     science_tools::calc,
     system_tools::{treee, yank},
 };
@@ -398,9 +399,10 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
                 let op = token(&data, 2).checker(Some("--set".to_string())).ughf();
                 let username = token(&data, 3);
                 let hispath = token(&data, 3);
+                let fangdir = token(&data, 3);
 
                 if let (Ok(o), Ok(p)) = (flag, op) {
-                    toml::configer(&o, &username, &hispath, &p).ugh();
+                    toml::configer(&o, &username, &hispath, &fangdir, &p).ugh();
                 }
             }
             "history" => {
@@ -453,6 +455,20 @@ pub fn repl() -> std::result::Result<(), HyperkitError> {
                     (type_, outpot_format, kind, file, output_file_name)
                 {
                     seal(&o, &r, &s, &f, &l, &pass).ugh();
+                }
+            }
+            "fang" => {
+                let ipaddr = token(&data, 1).checker(Some("ip addr".to_string())).ughf();
+                let scan_type = token(&data, 3)
+                    .checker(Some("scaning type".to_string()))
+                    .ughf();
+                let type_ = token(&data, 2).checker(Some("tcp/upd".to_string())).ughf();
+                let open_only = token(&data, 4);
+
+                if let (Ok(ip), Ok(st), Ok(ty)) = (ipaddr, scan_type, type_) {
+                    fang(ip, &st, &ty, &open_only).ugh();
+                } else {
+                    continue;
                 }
             }
             "end" => {

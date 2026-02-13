@@ -21,6 +21,7 @@ pub struct Config {
 #[derive(Deserialize)]
 pub struct Dependencies {
     pub historyfilepath: String,
+    pub fangdirpath: String,
 }
 
 #[derive(Deserialize)]
@@ -58,7 +59,11 @@ fn connfig_file_finder() -> std::result::Result<PathBuf, HyperkitError> {
     )))
 }
 
-fn help_configer_seter(username: &str, hispath: &str) -> std::result::Result<(), HyperkitError> {
+fn help_configer_seter(
+    username: &str,
+    hispath: &str,
+    fangdir: &str,
+) -> std::result::Result<(), HyperkitError> {
     let mut done = String::new();
 
     let find_config = connfig_file_finder()?;
@@ -69,6 +74,9 @@ fn help_configer_seter(username: &str, hispath: &str) -> std::result::Result<(),
         .read_to_string(&mut done)
         .errh(None)
         .ughv();
+
+    let rep = done.replace(&toml().dependencies.fangdirpath, &fangdir);
+    write_to_config(rep)?;
 
     if !username.contains("/") {
         let rep = done.replace(&toml().customization.username, &username);
@@ -85,6 +93,7 @@ pub fn configer(
     flag: &str,
     username: &str,
     hispath: &str,
+    fangdir: &str,
     operation: &str,
 ) -> std::result::Result<(), HyperkitError> {
     let tell = tell();
@@ -92,7 +101,7 @@ pub fn configer(
     match flag {
         "username" => match operation {
             "--set" => {
-                help_configer_seter(&username, &hispath)
+                help_configer_seter(&username, &hispath, &fangdir)
                     ._success_res("Configer", "succeeded")
                     .ugh();
             }
@@ -106,7 +115,7 @@ pub fn configer(
         },
         "hispath" => match operation {
             "--set" => {
-                help_configer_seter(&username, &hispath)
+                help_configer_seter(&username, &hispath, &fangdir)
                     ._success_res("Configer", "succeeded")
                     .ugh();
             }
@@ -116,6 +125,20 @@ pub fn configer(
                     "Error".red().bold(),
                     "No operation was supplied".red().bold()
                 );
+            }
+        },
+        "fangdirpath" => match operation {
+            "--set" => {
+                help_configer_seter(&username, &hispath, &fangdir)
+                    ._success_res("Configer", "succeeded")
+                    .ugh();
+            }
+            _ => {
+                println!(
+                    "[{tell:?}]~>{}: due to [{}]",
+                    "Error".red().bold(),
+                    "No operation was supplied".red().bold()
+                )
             }
         },
         _ => {

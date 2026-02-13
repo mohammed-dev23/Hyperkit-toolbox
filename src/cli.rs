@@ -306,6 +306,15 @@ pub mod cli {
             )]
             username: String,
             #[arg(
+                help = "the path of the dir that contuins all the fang dip",
+                short = 'f',
+                required = false,
+                group = "user",
+                default_value = ""
+            )]
+            fangdir: String,
+
+            #[arg(
                 help = "the history path you want to make the operation on",
                 short = 'p',
                 required = false,
@@ -405,10 +414,11 @@ pub mod cli {
                 flag,
                 operation,
                 username,
+                fangdir,
                 hispath,
             }) => {
                 let operation = format!("--{}", operation);
-                configer(&flag, &username, &hispath, &operation).ugh();
+                configer(&flag, &username, &hispath, &fangdir, &operation).ugh();
             }
             Some(Commandd::Yank { flag }) => yank(flag).ugh(),
             Some(Commandd::Indicate { file }) => indicate(file).ugh(),
