@@ -65,7 +65,7 @@ What sets **HyperKit** apart is its **simplicity** and **raw performance**
 |**calc**| Evaluates a mathematical expression and prints the result to the console. It accepts any valid math expression as a string — such as 2 + 2 or (10 * 5) / 2 — computes it using an expression evaluator, and displays the result styled with the user's configured username and current path. If the expression is invalid or can't be evaluated, it prints a descriptive error instead.
 
 ## Basic utilities
->**Basic utilities** Basic utilities are the foundational, everyday tools that don't fit neatly into a specific category but are essential for general use.
+>**Basic utilities** are the foundational, everyday tools that don't fit neatly into a specific category but are essential for general use.
 ---
 |tool|Description|modes|
 |----|-----------|-----|
